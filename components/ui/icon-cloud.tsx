@@ -49,6 +49,9 @@ export function IconCloud({
   const rotationRef = useRef({ x: 0, y: 0 })
   const iconCanvasesRef = useRef<HTMLCanvasElement[]>([])
   const imagesLoadedRef = useRef<boolean[]>([])
+  const isInViewRef = useRef(true)
+  const [isInView, setIsInView] = useState(true)
+  const hostRef = useRef<HTMLDivElement>(null)
 
   // Pause animation if user prefers reduced motion
   useEffect(() => {
@@ -63,6 +66,22 @@ export function IconCloud({
 
     mediaQuery.addEventListener("change", handleChange)
     return () => mediaQuery.removeEventListener("change", handleChange)
+  }, [])
+
+  // Stop the continuous RAF loop while the cloud is offscreen
+  useEffect(() => {
+    const host = hostRef.current
+    if (!host || typeof IntersectionObserver === "undefined") return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isInViewRef.current = entry.isIntersecting
+        setIsInView(entry.isIntersecting)
+      },
+      { rootMargin: "120px 0px", threshold: 0.01 }
+    )
+    observer.observe(host)
+    return () => observer.disconnect()
   }, [])
 
   // Create icon canvases once when icons/images change
@@ -329,14 +348,17 @@ export function IconCloud({
           Boolean(icons || images) &&
           !imagesLoadedRef.current.every((loaded) => loaded)
         const shouldContinue =
-          !isPaused || isDragging || targetRotation !== null || hasPendingAssets
+          isInViewRef.current &&
+          (!isPaused || isDragging || targetRotation !== null || hasPendingAssets)
 
         if (shouldContinue) {
           animationFrameRef.current = requestAnimationFrame(animate)
         }
       }
 
-      animate()
+      if (isInViewRef.current) {
+        animate()
+      }
     }
 
     return () => {
@@ -350,12 +372,13 @@ export function IconCloud({
     iconPositions,
     isDragging,
     isPaused,
+    isInView,
     mousePos,
     targetRotation,
   ])
 
   return (
-    <div className="relative inline-block">
+    <div ref={hostRef} className="relative inline-block">
       <canvas
         ref={canvasRef}
         width={480}

@@ -52,6 +52,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   const reduceMotion = useReducedMotion()
   const [pathD, setPathD] = useState("")
   const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 })
+  const paused = Boolean(reduceMotion) || repeat === 0
 
   // Calculate the gradient coordinates based on the reverse prop
   const gradientCoordinates = reverse
@@ -147,7 +148,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         strokeOpacity={pathOpacity}
         strokeLinecap="round"
       />
-      {!reduceMotion && (
+      {!paused && (
         <path
           d={pathD}
           strokeWidth={pathWidth}
@@ -168,7 +169,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
             y2: "0%",
           }}
           animate={
-            reduceMotion
+            paused
               ? staticGradient
               : {
                   x1: gradientCoordinates.x1,
@@ -178,7 +179,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
                 }
           }
           transition={
-            reduceMotion
+            paused
               ? { duration: 0 }
               : {
                   delay,

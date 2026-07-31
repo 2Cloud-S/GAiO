@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import styled from "styled-components";
-import type { CSSProperties } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 
 /** Card stage size — positions are relative to this box. */
 const STAGE_W = 200;
@@ -125,10 +125,30 @@ const DOTS = LETTERFORM.map((cell, i) => {
 });
 
 export function ShareParticleCard() {
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const [converged, setConverged] = useState(false);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Near bottom of viewport: treat as “hovered” so mobile gets the letterform.
+        setConverged(entry.isIntersecting && entry.intersectionRatio >= 0.35);
+      },
+      { threshold: [0, 0.35, 0.55, 0.75], rootMargin: "0px 0px -6% 0px" }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <StyledWrapper>
       <Link
-        className="card"
+        ref={cardRef}
+        className={converged ? "card is-converged" : "card"}
         href="/assessment"
         aria-label="Share the assessment — open readiness assessment"
       >
@@ -249,17 +269,20 @@ const StyledWrapper = styled.div`
     z-index: 1;
   }
 
+  .card.is-converged,
   .card:hover,
   .card:focus-visible {
     scale: 1.03;
     border-color: color-mix(in srgb, var(--color-paper) 28%, var(--color-graphite));
   }
 
+  .card.is-converged .label,
   .card:hover .label,
   .card:focus-visible .label {
     opacity: 1;
   }
 
+  .card.is-converged .dot,
   .card:hover .dot,
   .card:focus-visible .dot {
     left: var(--hover-x);

@@ -81,6 +81,9 @@ export function HeroGeoMap() {
   const structureRef = useRef<HTMLDivElement>(null);
   const corroborateRef = useRef<HTMLDivElement>(null);
   const monitorRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(containerRef, { amount: 0.2, margin: "80px" });
+  const reduceMotion = useReducedMotion();
+  const beamsActive = inView && !reduceMotion;
 
   const nodeRefs = [discoverRef, structureRef, corroborateRef, monitorRef] as const;
 
@@ -131,6 +134,7 @@ export function HeroGeoMap() {
           pathOpacity={1}
           gradientStartColor={HERO_BEAM_GRADIENT_START}
           gradientStopColor={HERO_BEAM_GRADIENT_STOP}
+          repeat={beamsActive ? Infinity : 0}
         />
       ))}
       <figcaption id="hero-geo-caption">
@@ -161,6 +165,15 @@ export function LineShadowText({
 /** Magic UI Morphing Text — cycles SEO / GEO / AEO into the same supporting line. */
 export function MorphStatement() {
   const reduceMotion = useReducedMotion();
+  const [coolTime, setCoolTime] = useState(3.5);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 800px)");
+    const apply = () => setCoolTime(mq.matches ? 6 : 3.5);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   if (reduceMotion) {
     return (
@@ -172,7 +185,7 @@ export function MorphStatement() {
     <MorphingText
       texts={MORPH_PHRASES}
       morphTime={1.5}
-      coolTime={3.5}
+      coolTime={coolTime}
       className={cn(
         "morph-line",
         "mx-0 h-10 max-w-[42rem] justify-start overflow-visible text-left",
@@ -322,14 +335,21 @@ export function TextReveal({ children }: { children: string }) {
 
 export function KineticText({ text }: { text: string }) {
   const reduceMotion = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { margin: "100px" });
   const repeated = `${text} · ${text} · ${text} · ${text} · `;
+  const shouldAnimate = !reduceMotion && inView;
 
   return (
-    <div className="kinetic-band" aria-hidden="true">
+    <div ref={ref} className="kinetic-band" aria-hidden="true">
       <motion.div
         className="kinetic-track"
-        animate={reduceMotion ? { x: 0 } : { x: ["0%", "-25%"] }}
-        transition={reduceMotion ? { duration: 0 } : { duration: 20, ease: "linear", repeat: Infinity }}
+        animate={shouldAnimate ? { x: ["0%", "-25%"] } : { x: 0 }}
+        transition={
+          shouldAnimate
+            ? { duration: 20, ease: "linear", repeat: Infinity }
+            : { duration: 0 }
+        }
       >
         <span>{repeated}</span>
         <span>{repeated}</span>
@@ -339,6 +359,17 @@ export function KineticText({ text }: { text: string }) {
 }
 
 export function EngineCloud() {
+  const [images, setImages] = useState(() => [...ENGINE_CLOUD_IMAGES]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 800px)");
+    const apply = () =>
+      setImages(mq.matches ? [...ENGINE_ICON_IMAGES] : [...ENGINE_CLOUD_IMAGES]);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
   return (
     <div className="engine-panel">
       <div
@@ -348,7 +379,7 @@ export function EngineCloud() {
         <p className="engine-core-label">
           GEO <small>engine signals</small>
         </p>
-        <IconCloud images={ENGINE_CLOUD_IMAGES} showControl={false} />
+        <IconCloud images={images} showControl={false} />
       </div>
       <div className="engine-list" aria-label="Engine names">
         {ENGINE_LABELS.map((label) => (

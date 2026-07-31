@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import createGlobe, { type COBEOptions } from "cobe"
 import { useMotionValue, useReducedMotion, useSpring } from "motion/react"
 
@@ -37,6 +37,16 @@ const GLOBE_CONFIG: COBEOptions = {
   ],
 }
 
+function mobileGlobeTuning(): Pick<COBEOptions, "devicePixelRatio" | "mapSamples"> {
+  if (typeof window === "undefined") {
+    return { devicePixelRatio: 2, mapSamples: 16000 }
+  }
+  const narrow = window.matchMedia("(max-width: 800px)").matches
+  return narrow
+    ? { devicePixelRatio: 1, mapSamples: 8000 }
+    : { devicePixelRatio: 2, mapSamples: 16000 }
+}
+
 export function Globe({
   className,
   config = GLOBE_CONFIG,
@@ -44,6 +54,7 @@ export function Globe({
   className?: string
   config?: COBEOptions
 }) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const phiRef = useRef(0)
   const widthRef = useRef(0)
@@ -52,6 +63,7 @@ export function Globe({
   const reduceMotion = useReducedMotion()
   const reduceMotionRef = useRef(reduceMotion)
   reduceMotionRef.current = reduceMotion
+  const [active, setActive] = useState(false)
 
   const r = useMotionValue(0)
   const rs = useSpring(r, {
@@ -75,7 +87,25 @@ export function Globe({
     }
   }
 
+  // Only run the WebGL globe while near the viewport
   useEffect(() => {
+    const host = containerRef.current
+    if (!host || typeof IntersectionObserver === "undefined") {
+      setActive(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting),
+      { rootMargin: "160px 0px", threshold: 0.01 }
+    )
+    observer.observe(host)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!active || !canvasRef.current) return
+
     const onResize = () => {
       if (canvasRef.current) {
         widthRef.current = canvasRef.current.offsetWidth
@@ -85,8 +115,10 @@ export function Globe({
     window.addEventListener("resize", onResize)
     onResize()
 
-    const globe = createGlobe(canvasRef.current!, {
+    const tuning = mobileGlobeTuning()
+    const globe = createGlobe(canvasRef.current, {
       ...config,
+      ...tuning,
       width: widthRef.current * 2,
       height: widthRef.current * 2,
       onRender: (state) => {
@@ -99,15 +131,21 @@ export function Globe({
       },
     })
 
-    setTimeout(() => (canvasRef.current!.style.opacity = "1"), 0)
+    const fade = window.setTimeout(() => {
+      if (canvasRef.current) canvasRef.current.style.opacity = "1"
+    }, 0)
+
     return () => {
+      window.clearTimeout(fade)
       globe.destroy()
       window.removeEventListener("resize", onResize)
+      if (canvasRef.current) canvasRef.current.style.opacity = "0"
     }
-  }, [rs, config])
+  }, [active, rs, config])
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "absolute inset-0 mx-auto aspect-square w-full max-w-150",
         className

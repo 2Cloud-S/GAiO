@@ -97,10 +97,18 @@ const useMorphingText = (
   }, [setContainerFilter])
 
   useEffect(() => {
-    let animationFrameId: number
+    let animationFrameId = 0
+    let running = false
+    const inViewRef = { current: true }
 
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate)
+    const tick = () => {
+      if (!inViewRef.current) {
+        running = false
+        doCooldown()
+        return
+      }
+
+      animationFrameId = requestAnimationFrame(tick)
 
       const newTime = new Date()
       const dt = (newTime.getTime() - timeRef.current.getTime()) / 1000
@@ -112,8 +120,35 @@ const useMorphingText = (
       else doCooldown()
     }
 
-    animate()
+    const start = () => {
+      if (running) return
+      running = true
+      timeRef.current = new Date()
+      tick()
+    }
+
+    const host = containerRef.current
+    const observer =
+      typeof IntersectionObserver !== "undefined" && host
+        ? new IntersectionObserver(
+            ([entry]) => {
+              inViewRef.current = entry.isIntersecting
+              if (entry.isIntersecting) start()
+              else {
+                cancelAnimationFrame(animationFrameId)
+                running = false
+                doCooldown()
+              }
+            },
+            { rootMargin: "80px 0px", threshold: 0.01 }
+          )
+        : null
+
+    if (observer && host) observer.observe(host)
+    start()
+
     return () => {
+      observer?.disconnect()
       cancelAnimationFrame(animationFrameId)
     }
   }, [doMorph, doCooldown])
