@@ -3,7 +3,7 @@ import { StyledComponentsRegistry } from "@/components/styled-components-registr
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Generative AI Optimization", template: "%s | Generative AI Optimization" },
+  title: { default: "GAiO — Generative AI Optimization", template: "%s | GAiO" },
   description: "A GEO agency for organisations that want their expertise to be understood, evidenced, and discoverable in generative search.",
 };
 
