@@ -2,7 +2,7 @@ import type { PortableTextBlock } from "next-sanity";
 import type { SanityImageSource } from "@sanity/image-url";
 import { articles, type Article } from "@/lib/content";
 import { getClient } from "./client";
-import { urlForImage } from "./image";
+import { resolveImageUrl } from "./image";
 import {
   latestPostsQuery,
   postBySlugQuery,
@@ -77,7 +77,9 @@ function mapSanityPost(doc: SanityPostDoc): InsightPost | null {
     likes: doc.likes ?? 0,
     views: doc.views ?? 0,
     comments: doc.comments ?? 0,
-    imageUrl: urlForImage(doc.mainImage)?.width(640).height(640).url() ?? null,
+    imageUrl: resolveImageUrl(doc.mainImage, (b) =>
+      b.width(640).height(640),
+    ),
     body: doc.body ?? undefined,
     source: "sanity",
   };

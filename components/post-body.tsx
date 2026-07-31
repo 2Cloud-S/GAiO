@@ -1,11 +1,11 @@
 import { PortableText, type PortableTextComponents } from "next-sanity";
 import type { PortableTextBlock } from "next-sanity";
-import { urlForImage } from "@/sanity/lib/image";
+import { resolveImageUrl } from "@/sanity/lib/image";
 
 const components: PortableTextComponents = {
   types: {
     image: ({ value }) => {
-      const url = urlForImage(value)?.width(1200).url();
+      const url = resolveImageUrl(value, (b) => b.width(1200));
       if (!url) return null;
       return (
         // eslint-disable-next-line @next/next/no-img-element

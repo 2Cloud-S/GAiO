@@ -12,7 +12,7 @@ const postFields = /* groq */ `
   likes,
   views,
   comments,
-  mainImage
+  "mainImage": select(defined(mainImage.asset) => mainImage, null)
 `;
 
 export const postsQuery = defineQuery(`
