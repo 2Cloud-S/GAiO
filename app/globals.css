@@ -24,8 +24,14 @@ button { cursor: pointer; }
 .eyebrow { margin: 0 0 var(--space-4); font: 700 var(--text-xs)/var(--leading-snug) var(--font-mono); letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; color: var(--color-muted); }
 .section-dark .eyebrow { color: var(--color-signal); }
 .display { margin: 0; font-family: var(--font-display); font-weight: 800; letter-spacing: var(--tracking-display); line-height: var(--leading-display); text-wrap: balance; overflow-wrap: anywhere; }
-.headline { font-size: var(--text-display); max-width: 10.5ch; letter-spacing: var(--tracking-headline); line-height: var(--leading-headline); overflow: visible; }
+.headline { display: flex; flex-direction: column; align-items: flex-start; font-size: var(--text-display); max-width: 10.5ch; letter-spacing: var(--tracking-headline); line-height: var(--leading-headline); overflow: visible; }
+.headline .headline-line { position: relative; display: block; }
+/* Top line stays in front so hatched shadows from "answer" cannot sit under letters on the line below. */
+.headline .headline-line:nth-child(1) { z-index: 2; }
+.headline .headline-line:nth-child(2) { z-index: 1; }
 .headline span { display: inline-block; }
+.headline .headline-line > span { display: inline; }
+.headline [data-text] { display: inline-block; overflow: visible; }
 .section-title { font-size: var(--text-2xl); max-width: 14ch; letter-spacing: var(--tracking-title); line-height: var(--leading-tight); }
 .card-title { margin: 0; font: 800 var(--text-xl)/var(--leading-tight) var(--font-display); letter-spacing: var(--tracking-tight); }
 .lede { margin: 0; font-size: var(--text-lg); line-height: var(--leading-lede); color: var(--color-graphite); max-width: 41rem; }
@@ -93,7 +99,6 @@ button { cursor: pointer; }
 .geo-core-symbol { position: relative; display: block; width: 1.45rem; height: 1.1rem; }.geo-core-symbol i { position: absolute; display: block; width: .4rem; height: .4rem; border: 1.5px solid var(--color-ink); border-radius: 50%; }.geo-core-symbol i:nth-child(1) { left: 0; top: .34rem; }.geo-core-symbol i:nth-child(2) { left: .95rem; top: 0; }.geo-core-symbol i:nth-child(3) { left: .95rem; bottom: 0; }.geo-core-symbol::before, .geo-core-symbol::after { content: ""; position: absolute; left: .36rem; width: .63rem; height: 1px; background: var(--color-ink); transform-origin: left center; }.geo-core-symbol::before { top: .47rem; transform: rotate(-27deg); }.geo-core-symbol::after { top: .63rem; transform: rotate(27deg); }
 .hero-map-node { position: absolute; z-index: 10; display: grid; width: 2.65rem; height: 2.65rem; place-items: center; border: 1px solid color-mix(in oklch, var(--color-paper) 32%, transparent); border-radius: 50%; background: color-mix(in oklch, var(--color-ink) 92%, transparent); color: var(--color-paper); transform: translate(-50%, -50%); box-shadow: 0 .35rem .9rem color-mix(in oklch, var(--color-ink) 40%, transparent); }
 .hero-geo-map figcaption { position: absolute; z-index: 10; right: var(--space-4); bottom: var(--space-4); display: inline-flex; align-items: center; gap: .4rem; margin: 0; color: var(--color-paper-soft); font: 700 10px/1.25 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
-.headline [data-text] { display: inline-flex; overflow: visible; }
 .morph-line {
   position: relative;
   margin: var(--space-6) 0 0;

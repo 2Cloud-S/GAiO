@@ -44,22 +44,38 @@ export function LineShadowText({
   ...props
 }: LineShadowTextProps) {
   const MotionComponent = motionElements[Component]
+  const characters = Array.from(children)
 
   return (
     <MotionComponent
-      style={{ "--shadow-color": shadowColor } as CSSProperties}
-      className={cn(
-        "relative z-0 inline-flex",
-        "after:absolute after:top-[0.04em] after:left-[0.04em] after:content-[attr(data-text)]",
-        "after:bg-[linear-gradient(45deg,transparent_45%,var(--shadow-color)_45%,var(--shadow-color)_55%,transparent_0)]",
-        "after:-z-10 after:bg-size-[0.06em_0.06em] after:bg-clip-text after:text-transparent",
-        "after:animate-line-shadow",
-        className
-      )}
-      data-text={children}
+      className={cn("relative inline", className)}
+      aria-label={children}
       {...props}
     >
-      {children}
+      {characters.map((char, index) => (
+        <span
+          key={`${index}-${char}`}
+          aria-hidden="true"
+          data-text={char}
+          style={
+            {
+              "--shadow-color": shadowColor,
+              zIndex: index + 1,
+            } as CSSProperties
+          }
+          className={cn(
+            "relative inline-block whitespace-pre",
+            // Keep each glyph + its hatched shadow as one stacking unit so later
+            // letters cover earlier shadows (tight tracking / line overlap).
+            "after:absolute after:top-[0.04em] after:left-[0.04em] after:content-[attr(data-text)]",
+            "after:bg-[linear-gradient(45deg,transparent_45%,var(--shadow-color)_45%,var(--shadow-color)_55%,transparent_0)]",
+            "after:-z-10 after:bg-size-[0.06em_0.06em] after:bg-clip-text after:text-transparent",
+            "after:animate-line-shadow"
+          )}
+        >
+          {char}
+        </span>
+      ))}
     </MotionComponent>
   )
 }
