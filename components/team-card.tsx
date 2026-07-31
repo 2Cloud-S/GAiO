@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Mail } from "lucide-react";
+import type { MouseEvent } from "react";
 import styled from "styled-components";
 
 export type TeamCardSocial = {
@@ -60,6 +61,17 @@ function SocialIcon({ icon }: { icon: TeamCardSocial["icon"] }) {
   );
 }
 
+function mailtoHref(address: string) {
+  return `mailto:${address.trim()}`;
+}
+
+/** Open the OS/browser mail compose; stopPropagation so parent handlers cannot cancel it. */
+function openMailCompose(event: MouseEvent<HTMLAnchorElement>, href: string) {
+  event.stopPropagation();
+  // Keep the real mailto href for progressive enhancement; assign makes compose reliable.
+  window.location.assign(href);
+}
+
 export function TeamCard({
   name,
   role,
@@ -72,19 +84,32 @@ export function TeamCard({
   imageSrc,
   imagePosition = "center top",
 }: TeamCardProps) {
-  const contactTarget = email ? `mailto:${email}` : contactHref;
-  const isExternal = contactTarget.startsWith("mailto:") || contactTarget.startsWith("http");
+  const mailHref = email ? mailtoHref(email) : undefined;
+  const contactTarget = mailHref ?? contactHref;
+  const isMailto = Boolean(mailHref);
+  const isExternal =
+    contactTarget.startsWith("mailto:") || contactTarget.startsWith("http");
 
   return (
     <StyledWrapper $tone={avatarTone} $imagePosition={imagePosition}>
       <article className="card" aria-label={`${name}, ${role}`}>
-        {isExternal ? (
-          <a className="mail" href={contactTarget} aria-label={`Email ${name}`}>
-            <Mail size={20} strokeWidth={2.25} />
+        {isMailto ? (
+          <a
+            className="mail"
+            href={mailHref}
+            aria-label={`Email ${name}`}
+            rel="noopener noreferrer"
+            onClick={(event) => openMailCompose(event, mailHref!)}
+          >
+            <Mail size={20} strokeWidth={2.25} aria-hidden="true" />
+          </a>
+        ) : isExternal ? (
+          <a className="mail" href={contactTarget} aria-label={`Contact ${name}`} rel="noopener noreferrer">
+            <Mail size={20} strokeWidth={2.25} aria-hidden="true" />
           </a>
         ) : (
           <Link className="mail" href={contactTarget} aria-label={`Contact ${name}`}>
-            <Mail size={20} strokeWidth={2.25} />
+            <Mail size={20} strokeWidth={2.25} aria-hidden="true" />
           </Link>
         )}
 
@@ -109,17 +134,33 @@ export function TeamCard({
           <div className="bottom-bottom">
             <div className="social-links-container">
               {socials?.map((social) => (
-                <a key={social.label} href={social.href} aria-label={social.label}>
+                <a
+                  key={social.label}
+                  href={social.href}
+                  aria-label={social.label}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  onClick={(event) => event.stopPropagation()}
+                >
                   <SocialIcon icon={social.icon} />
                 </a>
               ))}
             </div>
-            {isExternal ? (
-              <a className="button" href={contactTarget}>
+            {isMailto ? (
+              <a
+                className="contact"
+                href={mailHref}
+                rel="noopener noreferrer"
+                onClick={(event) => openMailCompose(event, mailHref!)}
+              >
+                Contact Me
+              </a>
+            ) : isExternal ? (
+              <a className="contact" href={contactTarget} rel="noopener noreferrer">
                 Contact Me
               </a>
             ) : (
-              <Link className="button" href={contactTarget}>
+              <Link className="contact" href={contactTarget}>
                 Contact Me
               </Link>
             )}
@@ -150,7 +191,7 @@ const StyledWrapper = styled.div<{
     position: absolute;
     right: 1.15rem;
     top: 1.1rem;
-    z-index: 5;
+    z-index: 10;
     display: grid;
     place-items: center;
     width: 2.5rem;
@@ -163,6 +204,7 @@ const StyledWrapper = styled.div<{
     cursor: pointer;
     color: var(--color-paper);
     text-decoration: none;
+    pointer-events: auto;
     transition: background 0.35s ease, color 0.35s ease;
   }
 
@@ -193,6 +235,8 @@ const StyledWrapper = styled.div<{
     z-index: 1;
     border: 0px solid var(--color-ink);
     overflow: hidden;
+    /* Decorative only — must not intercept mail / contact hits */
+    pointer-events: none;
     transition: all 0.5s ease-in-out 0.2s, z-index 0.5s ease-in-out 0.2s;
   }
 
@@ -267,7 +311,8 @@ const StyledWrapper = styled.div<{
     right: 1.25rem;
     height: auto;
     overflow: hidden;
-    z-index: 2;
+    z-index: 1;
+    pointer-events: none;
     transition: top 0.5s cubic-bezier(0.645, 0.045, 0.355, 1) 0.2s;
   }
 
@@ -309,11 +354,12 @@ const StyledWrapper = styled.div<{
     bottom: 0.85rem;
     left: 1.25rem;
     right: 1.25rem;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+    pointer-events: auto;
   }
 
   .card .bottom .bottom-bottom .social-links-container {
@@ -342,7 +388,12 @@ const StyledWrapper = styled.div<{
     transform: scale(1.2);
   }
 
-  .card .bottom .bottom-bottom .button {
+  .card .bottom .bottom-bottom .contact {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: var(--color-paper);
     color: var(--color-ink);
     border: none;
@@ -356,10 +407,12 @@ const StyledWrapper = styled.div<{
     box-shadow: color-mix(in oklch, var(--color-ink) 14%, transparent) 0px 5px 5px 0px;
     transition: background 0.5s ease, color 0.5s ease;
     white-space: nowrap;
+    cursor: pointer;
+    pointer-events: auto;
   }
 
-  .card .bottom .bottom-bottom .button:hover,
-  .card .bottom .bottom-bottom .button:focus-visible {
+  .card .bottom .bottom-bottom .contact:hover,
+  .card .bottom .bottom-bottom .contact:focus-visible {
     background: var(--color-signal-deep);
     color: var(--color-paper);
   }
@@ -416,7 +469,7 @@ const StyledWrapper = styled.div<{
     .card .profile-pic .avatar-img,
     .card .mail,
     .card .mail svg,
-    .card .bottom .bottom-bottom .button,
+    .card .bottom .bottom-bottom .contact,
     .card .bottom .bottom-bottom .social-links-container svg,
     .card .bottom .content .about-me {
       transition: none;
