@@ -4,6 +4,8 @@ import { PostBody } from "@/components/post-body";
 import { PostReaction } from "@/components/post-reaction";
 import { getInsightBySlug, getInsightSlugs } from "@/sanity/lib/posts";
 
+export const revalidate = 60;
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {

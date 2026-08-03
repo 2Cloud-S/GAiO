@@ -62,6 +62,14 @@ export const postType = defineType({
       initialValue: () => new Date().toISOString(),
     }),
     defineField({
+      name: "featured",
+      title: "Featured on homepage",
+      type: "boolean",
+      description:
+        "When enabled, this post is preferred in the Insights section on the homepage. If fewer than three posts are featured, the newest published posts fill the remaining slots.",
+      initialValue: false,
+    }),
+    defineField({
       name: "likes",
       title: "Likes (display)",
       type: "number",
@@ -120,11 +128,12 @@ export const postType = defineType({
       title: "title",
       author: "author",
       media: "mainImage",
+      featured: "featured",
     },
-    prepare({ title, author, media }) {
+    prepare({ title, author, media, featured }) {
       return {
         title,
-        subtitle: author,
+        subtitle: featured ? `Featured · ${author || "Untitled author"}` : author,
         media,
       };
     },

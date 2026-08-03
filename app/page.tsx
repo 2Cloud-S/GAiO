@@ -8,6 +8,9 @@ import { CountUp, EngineCloud, HeroGeoMap, Highlighter, KineticText, LineShadowT
 import { blogHref, blogListingHref, faqs, methodSteps, proofs, services, team, testimonials } from "@/lib/content";
 import { getLatestInsightPosts } from "@/sanity/lib/posts";
 
+/** Refresh homepage Insights after Studio publishes. */
+export const revalidate = 60;
+
 export default async function HomePage() {
   const latestInsights = await getLatestInsightPosts(3);
 
