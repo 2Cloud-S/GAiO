@@ -71,21 +71,28 @@ export const postType = defineType({
     }),
     defineField({
       name: "likes",
-      title: "Likes (display)",
+      title: "Likes",
       type: "number",
+      description: "Persisted via the site like button (and editable here).",
       initialValue: 0,
+      validation: (rule) => rule.min(0).integer(),
     }),
     defineField({
       name: "views",
-      title: "Views (display)",
+      title: "Views",
       type: "number",
+      description: "Persisted via the site (once per browser session).",
       initialValue: 0,
+      validation: (rule) => rule.min(0).integer(),
     }),
     defineField({
       name: "comments",
-      title: "Comments (display)",
+      title: "Comments (legacy display)",
       type: "number",
+      description:
+        "Optional fallback count. Live pages prefer counting approved comment documents.",
       initialValue: 0,
+      validation: (rule) => rule.min(0).integer(),
     }),
     defineField({
       name: "body",
@@ -108,6 +115,62 @@ export const postType = defineType({
               component: BlockquoteStyle,
             },
           ],
+          marks: {
+            decorators: [
+              { title: "Strong", value: "strong" },
+              { title: "Emphasis", value: "em" },
+              { title: "Underline", value: "underline" },
+              { title: "Strike", value: "strike-through" },
+              { title: "Code", value: "code" },
+              { title: "Highlight", value: "highlight" },
+            ],
+            annotations: [
+              {
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  defineField({
+                    name: "href",
+                    type: "url",
+                    title: "URL",
+                    validation: (rule) =>
+                      rule.uri({
+                        allowRelative: true,
+                        scheme: ["http", "https", "mailto", "tel"],
+                      }),
+                  }),
+                  defineField({
+                    name: "blank",
+                    type: "boolean",
+                    title: "Open in new tab",
+                    initialValue: true,
+                  }),
+                ],
+              },
+              {
+                name: "citation",
+                type: "object",
+                title: "Citation",
+                fields: [
+                  defineField({
+                    name: "source",
+                    type: "string",
+                    title: "Source",
+                    description: "Publication, author, or short attribution.",
+                    validation: (rule) => rule.required().max(200),
+                  }),
+                  defineField({
+                    name: "url",
+                    type: "url",
+                    title: "Source URL",
+                    validation: (rule) =>
+                      rule.uri({ scheme: ["http", "https"] }),
+                  }),
+                ],
+              },
+            ],
+          },
         }),
         defineArrayMember({
           type: "image",

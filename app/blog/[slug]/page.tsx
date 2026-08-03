@@ -1,8 +1,14 @@
 import { notFound } from "next/navigation";
 import { LayoutFrame } from "@/components/page-elements";
 import { PostBody } from "@/components/post-body";
+import { PostComments } from "@/components/post-comments";
 import { PostReaction } from "@/components/post-reaction";
-import { getInsightBySlug, getInsightSlugs } from "@/sanity/lib/posts";
+import { PostViews } from "@/components/post-views";
+import {
+  getCommentsForPost,
+  getInsightBySlug,
+  getInsightSlugs,
+} from "@/sanity/lib/posts";
 
 export const revalidate = 60;
 
@@ -27,6 +33,9 @@ export default async function BlogDetailPage({ params }: Props) {
   const post = await getInsightBySlug(slug);
   if (!post) notFound();
 
+  const persist = post.source === "sanity";
+  const comments = persist ? await getCommentsForPost(post._id) : [];
+
   const dateLabel = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString("en-GB", {
         year: "numeric",
@@ -49,9 +58,14 @@ export default async function BlogDetailPage({ params }: Props) {
             </p>
             <h1 className="display headline">{post.title}</h1>
             <p className="lede">{post.excerpt}</p>
-            <p className="meta" style={{ marginTop: "var(--space-4)" }}>
-              {post.author}
-            </p>
+            <div className="post-meta-row">
+              <p className="meta">{post.author}</p>
+              <PostViews
+                postId={post._id}
+                initialViews={post.views}
+                persist={persist}
+              />
+            </div>
           </div>
         </header>
         <div className="section">
@@ -62,9 +76,23 @@ export default async function BlogDetailPage({ params }: Props) {
             <aside className="reading-rail">
               <span className="meta">Your reaction</span>
               <div style={{ marginTop: "var(--space-4)" }}>
-                <PostReaction initialLikes={post.likes} initialDislikes={0} />
+                <PostReaction
+                  postId={post._id}
+                  persist={persist}
+                  initialLikes={post.likes}
+                  initialDislikes={0}
+                />
               </div>
             </aside>
+          </div>
+        </div>
+        <div className="section section-muted">
+          <div className="wrap">
+            <PostComments
+              postId={post._id}
+              initialComments={comments}
+              persist={persist}
+            />
           </div>
         </div>
       </article>

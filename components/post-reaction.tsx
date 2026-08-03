@@ -1,14 +1,27 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState, useEffectEvent } from "react";
 import styled from "styled-components";
+import {
+  dislikedStorageKey,
+  likedStorageKey,
+  readFlag,
+  writeFlag,
+} from "@/lib/post-engagement";
 
 export type PostReactionProps = {
+  postId: string;
+  persist?: boolean;
   initialLikes?: number;
   initialDislikes?: number;
 };
 
-export function PostReaction({ initialLikes = 0, initialDislikes = 0 }: PostReactionProps) {
+export function PostReaction({
+  postId,
+  persist = true,
+  initialLikes = 0,
+  initialDislikes = 0,
+}: PostReactionProps) {
   const uid = useId().replace(/:/g, "");
   const likeId = `like-${uid}`;
   const dislikeId = `dislike-${uid}`;
@@ -16,28 +29,107 @@ export function PostReaction({ initialLikes = 0, initialDislikes = 0 }: PostReac
   const [reaction, setReaction] = useState<"like" | "dislike" | null>(null);
   const [likes, setLikes] = useState(initialLikes);
   const [dislikes, setDislikes] = useState(initialDislikes);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const hydrated = useRef(false);
+
+  const hydrateLocal = useEffectEvent(() => {
+    if (hydrated.current) return;
+    hydrated.current = true;
+    const liked = readFlag(likedStorageKey(postId));
+    const disliked = readFlag(dislikedStorageKey(postId));
+    if (liked) setReaction("like");
+    else if (disliked) setReaction("dislike");
+  });
+
+  useEffect(() => {
+    hydrateLocal();
+  }, [postId, hydrateLocal]);
 
   if (hidden) return null;
 
-  const onLikeChange = (checked: boolean) => {
+  const syncLike = async (next: "like" | "unlike") => {
+    if (!persist) return true;
+    setPending(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/posts/${encodeURIComponent(postId)}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: next }),
+      });
+      const data = (await res.json()) as {
+        likes?: number;
+        error?: string;
+      };
+      if (!res.ok) {
+        setError(data.error || "Could not save like.");
+        return false;
+      }
+      if (typeof data.likes === "number") setLikes(data.likes);
+      return true;
+    } catch {
+      setError("Could not reach the server.");
+      return false;
+    } finally {
+      setPending(false);
+    }
+  };
+
+  const onLikeChange = async (checked: boolean) => {
+    if (pending) return;
+
     if (checked) {
+      const prev = reaction;
       setLikes((n) => n + (reaction === "like" ? 0 : 1));
-      if (reaction === "dislike") setDislikes((n) => Math.max(0, n - 1));
+      if (reaction === "dislike") {
+        setDislikes((n) => Math.max(0, n - 1));
+        writeFlag(dislikedStorageKey(postId), false);
+      }
       setReaction("like");
+      writeFlag(likedStorageKey(postId), true);
+
+      const ok = await syncLike("like");
+      if (!ok) {
+        setReaction(prev);
+        writeFlag(likedStorageKey(postId), prev === "like");
+        setLikes(initialLikes);
+        if (prev === "dislike") {
+          writeFlag(dislikedStorageKey(postId), true);
+          setDislikes(initialDislikes);
+        }
+      }
     } else {
       setLikes((n) => Math.max(0, n - 1));
       setReaction(null);
+      writeFlag(likedStorageKey(postId), false);
+
+      const ok = await syncLike("unlike");
+      if (!ok) {
+        setReaction("like");
+        writeFlag(likedStorageKey(postId), true);
+        setLikes((n) => n + 1);
+      }
     }
   };
 
   const onDislikeChange = (checked: boolean) => {
+    if (pending) return;
+
     if (checked) {
+      const wasLiked = reaction === "like";
       setDislikes((n) => n + (reaction === "dislike" ? 0 : 1));
-      if (reaction === "like") setLikes((n) => Math.max(0, n - 1));
+      if (wasLiked) {
+        setLikes((n) => Math.max(0, n - 1));
+        writeFlag(likedStorageKey(postId), false);
+        void syncLike("unlike");
+      }
       setReaction("dislike");
+      writeFlag(dislikedStorageKey(postId), true);
     } else {
       setDislikes((n) => Math.max(0, n - 1));
       setReaction(null);
+      writeFlag(dislikedStorageKey(postId), false);
     }
   };
 
@@ -68,7 +160,9 @@ export function PostReaction({ initialLikes = 0, initialDislikes = 0 }: PostReac
                 id={likeId}
                 type="checkbox"
                 checked={reaction === "like"}
-                onChange={(e) => onLikeChange(e.target.checked)}
+                disabled={pending}
+                aria-label={`Like this post (${likes} likes)`}
+                onChange={(e) => void onLikeChange(e.target.checked)}
               />
               <svg className="svgs icon-like-solid" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-hidden="true">
                 <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2H464c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48H294.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V320 272 247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z" />
@@ -88,6 +182,8 @@ export function PostReaction({ initialLikes = 0, initialDislikes = 0 }: PostReac
                 id={dislikeId}
                 type="checkbox"
                 checked={reaction === "dislike"}
+                disabled={pending}
+                aria-label={`Dislike this post (${dislikes} dislikes)`}
                 onChange={(e) => onDislikeChange(e.target.checked)}
               />
               <div className="fireworks">
@@ -103,6 +199,11 @@ export function PostReaction({ initialLikes = 0, initialDislikes = 0 }: PostReac
             </label>
           </div>
         </div>
+        {error ? (
+          <p className="reaction-error" role="status">
+            {error}
+          </p>
+        ) : null}
       </div>
     </StyledWrapper>
   );
@@ -333,6 +434,15 @@ const StyledWrapper = styled.div`
     box-shadow: 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff;
     animation: 1s fireworks-bang ease-out forwards, 1s fireworks-gravity ease-in forwards, 5s fireworks-position linear forwards;
     animation-duration: 1.25s, 1.25s, 6.25s;
+  }
+
+  .reaction-error {
+    margin: 0.75rem 0 0;
+    max-width: 14rem;
+    font: 600 0.7rem/1.35 var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: color-mix(in oklch, var(--color-paper) 72%, transparent);
   }
 
   /* Shake Animation */

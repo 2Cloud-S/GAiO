@@ -12,7 +12,11 @@ const postFields = /* groq */ `
   featured,
   likes,
   views,
-  comments,
+  "comments": coalesce(
+    count(*[_type == "comment" && post._ref == ^._id && approved == true]),
+    comments,
+    0
+  ),
   "mainImage": select(defined(mainImage.asset) => mainImage, null)
 `;
 
@@ -43,4 +47,14 @@ export const postBySlugQuery = defineQuery(`
 
 export const postSlugsQuery = defineQuery(`
   *[_type == "post" && defined(slug.current)][].slug.current
+`);
+
+export const commentsByPostQuery = defineQuery(`
+  *[_type == "comment" && post._ref == $postId && approved == true]
+    | order(createdAt desc) {
+    _id,
+    name,
+    body,
+    createdAt
+  }
 `);

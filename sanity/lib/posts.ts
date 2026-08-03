@@ -4,12 +4,16 @@ import { articles, type Article } from "@/lib/content";
 import { getClient } from "./client";
 import { resolveImageUrl } from "./image";
 import {
+  commentsByPostQuery,
   latestPostsQuery,
   postBySlugQuery,
   postSlugsQuery,
   postsQuery,
 } from "./queries";
 import { isSanityConfigured } from "../env";
+import type { PublicComment } from "@/lib/comments";
+
+export type InsightComment = PublicComment;
 
 /** Seconds — keeps /blog and homepage Insights fresh after Studio publishes. */
 const SANITY_REVALIDATE_SECONDS = 60;
@@ -95,6 +99,7 @@ function mapSanityPost(doc: SanityPostDoc): InsightPost | null {
 async function fetchSanity<T>(
   query: string,
   params: Record<string, unknown> = {},
+  tags: string[] = ["sanity-post"],
 ): Promise<T | null> {
   const client = getClient();
   if (!client) return null;
@@ -102,7 +107,7 @@ async function fetchSanity<T>(
     return await client.fetch<T>(query, params, {
       next: {
         revalidate: SANITY_REVALIDATE_SECONDS,
-        tags: ["sanity-post"],
+        tags,
       },
     });
   } catch (error) {
@@ -161,4 +166,16 @@ export async function getInsightSlugs(): Promise<string[]> {
     if (slugs) return slugs.filter(Boolean);
   }
   return articles.map((a) => a.slug);
+}
+
+export async function getCommentsForPost(
+  postId: string,
+): Promise<InsightComment[]> {
+  if (!isSanityConfigured || postId.startsWith("sample-")) return [];
+  const comments = await fetchSanity<InsightComment[]>(
+    commentsByPostQuery,
+    { postId },
+    ["sanity-comment", `sanity-comment-${postId}`],
+  );
+  return comments ?? [];
 }
