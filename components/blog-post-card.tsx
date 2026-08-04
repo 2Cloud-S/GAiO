@@ -97,17 +97,16 @@ const StyledWrapper = styled.div`
 
   .main {
     --card-w: 100%;
-    --card-h: 11.5rem;
     --meta-h: 3.25rem;
     --stats-h: 1.75rem;
     --pad: 0.85rem;
     position: relative;
     display: grid;
-    grid-template-rows: var(--card-h) var(--meta-h) var(--stats-h);
+    grid-template-rows: auto var(--meta-h) var(--stats-h);
     row-gap: 0.75rem;
     width: 100%;
     max-width: 100%;
-    min-height: calc(var(--card-h) + var(--meta-h) + var(--stats-h) + 1.5rem);
+    min-height: 0;
     padding: var(--pad);
     isolation: isolate;
   }
@@ -115,7 +114,8 @@ const StyledWrapper = styled.div`
   .card-stage {
     position: relative;
     width: 100%;
-    height: var(--card-h);
+    aspect-ratio: 16 / 9;
+    height: auto;
     z-index: 1;
   }
 
@@ -151,17 +151,24 @@ const StyledWrapper = styled.div`
   .card_media {
     position: absolute;
     inset: 0;
+    background: var(--color-ink-soft);
   }
 
-  .card_media img,
-  .card_fallback {
+  .card_media img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
     display: block;
   }
 
   .card_fallback {
+    width: 100%;
+    height: 100%;
     display: grid;
     place-items: center;
     background:
@@ -184,7 +191,7 @@ const StyledWrapper = styled.div`
       transparent 42%,
       color-mix(in oklch, var(--color-ink) 55%, transparent) 100%
     );
-    opacity: 0.55;
+    opacity: 0;
     transition: opacity var(--dur-base) var(--ease-out);
     pointer-events: none;
   }
@@ -365,7 +372,7 @@ const StyledWrapper = styled.div`
 
   .main:hover .card_scrim,
   .main:focus-within .card_scrim {
-    opacity: 0.35;
+    opacity: 0.28;
   }
 
   .main:hover .stat,

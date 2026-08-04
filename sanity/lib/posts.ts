@@ -88,9 +88,7 @@ function mapSanityPost(doc: SanityPostDoc): InsightPost | null {
     likes: doc.likes ?? 0,
     views: doc.views ?? 0,
     comments: doc.comments ?? 0,
-    imageUrl: resolveImageUrl(doc.mainImage, (b) =>
-      b.width(640).height(640),
-    ),
+    imageUrl: resolveImageUrl(doc.mainImage, (b) => b.width(800)),
     body: doc.body ?? undefined,
     source: "sanity",
   };
