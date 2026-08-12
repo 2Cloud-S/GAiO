@@ -571,6 +571,7 @@ button { cursor: pointer; }
   .split-head > .button { margin-top: var(--space-6); }
   .hero-note { display: none; }
   .hero-geo-map { width: min(100%, 28rem); margin-inline: auto; }
+  .morph-line { line-height: var(--leading-tight); letter-spacing: var(--tracking-tight); }
   .hero-map-center { width: 7rem; height: 7rem; }.hero-map-node { width: 2.25rem; height: 2.25rem; }.hero-geo-map figcaption { left: var(--space-4); right: auto; font-size: 9px; }
   .engine-panel { min-height: 29rem; padding: var(--space-5); }
   .engine-icon { width: 3.55rem; height: 3.55rem; transform: rotate(var(--angle)) translateY(-8.2rem) rotate(calc(var(--angle) * -1)); }.engine-icon b { font-size: .72rem; }.engine-core { width: 7rem; height: 7rem; font-size: 1rem; }
@@ -585,7 +586,8 @@ button { cursor: pointer; }
     max-width: none;
   }
   .service-grid, .testimonial-grid, .card-grid { grid-template-columns: minmax(0, 1fr); }
-  .blog-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Avoid cramped card titles at common "phone/tablet" widths (e.g. 768px). */
+  .blog-card-grid { grid-template-columns: minmax(0, 1fr); }
   .proof-frame { min-height: 23rem; }
   .reading-rail { position: static; border-left: 0; border-top: var(--rule); padding: var(--space-4) 0 0; }
   .post-comment-grid { grid-template-columns: minmax(0, 1fr); }

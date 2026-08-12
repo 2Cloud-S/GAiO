@@ -385,6 +385,29 @@ const StyledWrapper = styled.div`
     background: var(--color-ink);
   }
 
+  @media (max-width: 800px) {
+    /* Mobile/tablet: avoid cramped typography in the fixed-height meta row. */
+    .text_m {
+      line-height: var(--leading-snug);
+      letter-spacing: var(--tracking-tight);
+    }
+
+    .text_s {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+      letter-spacing: var(--tracking-meta);
+    }
+
+    .stat_text {
+      line-height: 1.2;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .card,
     .card_back,
