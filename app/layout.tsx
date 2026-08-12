@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { StyledComponentsRegistry } from "@/components/styled-components-registry";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: { default: "GAiO — Generative AI Optimization", template: "%s | GAiO" },
   description: "A GEO agency for organisations that want their expertise to be understood, evidenced, and discoverable in generative search.",
 };

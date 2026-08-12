@@ -27,6 +27,7 @@ export type InsightPost = {
   category: string;
   readTime: string;
   publishedAt: string | null;
+  updatedAt: string | null;
   featured: boolean;
   likes: number;
   views: number;
@@ -38,6 +39,7 @@ export type InsightPost = {
 
 type SanityPostDoc = {
   _id: string;
+  _updatedAt?: string | null;
   title?: string | null;
   slug?: string | null;
   excerpt?: string | null;
@@ -63,6 +65,7 @@ function sampleToInsight(article: Article, index: number): InsightPost {
     category: article.category,
     readTime: article.readTime,
     publishedAt: null,
+    updatedAt: null,
     featured: index === 0,
     likes: 12 + index * 5,
     views: 120 + index * 40,
@@ -84,6 +87,7 @@ function mapSanityPost(doc: SanityPostDoc): InsightPost | null {
     category: doc.category ?? "Insight",
     readTime: doc.readTime ?? "5 min read",
     publishedAt: doc.publishedAt ?? null,
+    updatedAt: doc._updatedAt ?? null,
     featured: Boolean(doc.featured),
     likes: doc.likes ?? 0,
     views: doc.views ?? 0,

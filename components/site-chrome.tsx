@@ -48,6 +48,7 @@ export function SiteFooter() {
           <span className="meta">Explore</span>
           {navItems.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
           <Link href="/assessment">Readiness assessment</Link>
+          <a href="/sitemap.xml">Sitemap</a>
         </div>
         <ShareParticleCard />
       </div>
