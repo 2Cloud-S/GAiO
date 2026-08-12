@@ -26,7 +26,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <script
           type="application/ld+json"
-          // Escape < so user-controlled CMS strings cannot break out of the script tag.
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
           }}

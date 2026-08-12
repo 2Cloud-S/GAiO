@@ -39,6 +39,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: route.changeFrequency,
       priority: route.priority,
     })),
+    {
+      url: `${siteUrl}/llms.txt`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.4,
+    },
+    {
+      url: `${siteUrl}/llms-full.txt`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.3,
+    },
     ...posts.map((post) => ({
       url: `${siteUrl}${blogHref(post.slug)}`,
       lastModified: postLastModified(post),
