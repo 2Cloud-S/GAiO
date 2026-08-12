@@ -7,15 +7,20 @@ import { cn } from "@/lib/utils"
 const DEFAULT_MORPH_TIME = 1.5
 const DEFAULT_COOL_TIME = 0.5
 
-/** SVG threshold + light blur — only while morphing; off when settled for crisp glyphs. */
-const MORPH_CONTAINER_FILTER = "url(#threshold) blur(0.6px)"
+/** SVG threshold + light blur — only while morphing; off when settled for crisp glyphs.
+ *  The SVG feColorMatrix threshold filter causes chromatic fringing on mobile GPUs,
+ *  so on mobile we use only a plain blur without the threshold filter. */
+const MORPH_CONTAINER_FILTER_DESKTOP = "url(#threshold) blur(0.6px)"
+const MORPH_CONTAINER_FILTER_MOBILE = "blur(0.5px)"
 
 /** blur(0px) still promotes a filter layer on some GPUs — use none when settled. */
-const applyLayerBlur = (el: HTMLSpanElement, amount: number) => {
+const applyLayerBlur = (el: HTMLSpanElement, amount: number, mobile: boolean) => {
   if (!Number.isFinite(amount) || amount <= 0.01) {
     el.style.filter = "none"
   } else {
-    el.style.filter = `blur(${amount}px)`
+    // On mobile, cap blur to 4px to reduce GPU compositing cost
+    const capped = mobile ? Math.min(amount, 4) : amount
+    el.style.filter = `blur(${capped}px)`
   }
 }
 
@@ -30,6 +35,7 @@ const useMorphingText = (
   const timeRef = useRef(new Date())
   const morphTimeRef = useRef(morphTime)
   const coolTimeRef = useRef(coolTime)
+  const isMobileRef = useRef(false)
 
   morphTimeRef.current = morphTime
   coolTimeRef.current = coolTime
@@ -38,10 +44,27 @@ const useMorphingText = (
   const text2Ref = useRef<HTMLSpanElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Sync mobile flag; re-evaluate on resize
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const mq = window.matchMedia("(max-width: 800px)")
+    isMobileRef.current = mq.matches
+    const handler = (e: MediaQueryListEvent) => { isMobileRef.current = e.matches }
+    mq.addEventListener("change", handler)
+    return () => mq.removeEventListener("change", handler)
+  }, [])
+
   const setContainerFilter = useCallback((active: boolean) => {
     const container = containerRef.current
     if (!container) return
-    container.style.filter = active ? MORPH_CONTAINER_FILTER : "none"
+    if (!active) {
+      container.style.filter = "none"
+      return
+    }
+    // On mobile, skip the SVG threshold filter — it causes chromatic fringing on mobile GPUs
+    container.style.filter = isMobileRef.current
+      ? MORPH_CONTAINER_FILTER_MOBILE
+      : MORPH_CONTAINER_FILTER_DESKTOP
   }, [])
 
   const setStyles = useCallback(
@@ -52,11 +75,12 @@ const useMorphingText = (
       // Threshold/blur on the wrapper only mid-morph; settled frames stay filter-free.
       setContainerFilter(fraction > 0 && fraction < 1)
 
-      applyLayerBlur(current2, Math.min(8 / fraction - 8, 100))
+      const mobile = isMobileRef.current
+      applyLayerBlur(current2, Math.min(8 / fraction - 8, 100), mobile)
       current2.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`
 
       const invertedFraction = 1 - fraction
-      applyLayerBlur(current1, Math.min(8 / invertedFraction - 8, 100))
+      applyLayerBlur(current1, Math.min(8 / invertedFraction - 8, 100), mobile)
       current1.style.opacity = `${Math.pow(invertedFraction, 0.4) * 100}%`
 
       current1.textContent = texts[textIndexRef.current % texts.length]
@@ -168,7 +192,8 @@ interface MorphingTextProps {
 const SvgFilters: React.FC = () => (
   <svg
     id="filters"
-    className="fixed h-0 w-0"
+    aria-hidden="true"
+    className="absolute h-0 w-0 overflow-hidden"
     preserveAspectRatio="xMidYMid slice"
   >
     <defs>
@@ -210,6 +235,8 @@ export const MorphingText: React.FC<MorphingTextProps> = ({
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
         textRendering: "geometricPrecision",
+        // Isolate filter compositing to this element; prevents filter bleed to sibling layers
+        isolation: "isolate",
       }}
     >
       <span

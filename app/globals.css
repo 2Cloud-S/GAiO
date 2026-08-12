@@ -621,6 +621,9 @@ button { cursor: pointer; }
   .button-signal::after { animation: none; }
   .headline [data-text]::after { animation: none; }
   .velocity-tape span { animation-duration: 28s; }
+  /* Safety-net: if JS somehow applies url(#threshold) on mobile, override to plain blur.
+     The feColorMatrix alpha-threshold filter causes RGB chromatic fringing on mobile GPUs. */
+  [style*="url(#threshold)"] { filter: blur(0.5px) !important; }
 }
 
 @media (max-width: 520px) {
