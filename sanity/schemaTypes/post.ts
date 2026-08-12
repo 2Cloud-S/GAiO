@@ -1,3 +1,5 @@
+import { CodeIcon } from "@sanity/icons/Code";
+import { ImageIcon } from "@sanity/icons/Image";
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { BlockquoteStyle } from "./blockquoteStyle";
 
@@ -174,6 +176,7 @@ export const postType = defineType({
         }),
         defineArrayMember({
           type: "image",
+          icon: ImageIcon,
           options: { hotspot: true },
           fields: [
             defineField({
@@ -181,9 +184,47 @@ export const postType = defineType({
               type: "string",
               title: "Alternative text",
             }),
+            defineField({
+              name: "caption",
+              type: "string",
+              title: "Caption",
+            }),
           ],
         }),
+        defineArrayMember({
+          type: "table",
+          title: "Table",
+        }),
+        defineArrayMember({
+          type: "callout",
+          title: "Callout",
+        }),
+        defineArrayMember({
+          type: "code",
+          title: "Code block",
+          icon: CodeIcon,
+        }),
+        defineArrayMember({
+          type: "horizontalRule",
+          title: "Divider",
+        }),
+        defineArrayMember({
+          type: "statsRow",
+          title: "Stats row",
+        }),
       ],
+      components: {
+        portableText: {
+          plugins: (props) =>
+            props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                table: { enabled: true },
+              },
+            }),
+        },
+      },
     }),
   ],
   preview: {

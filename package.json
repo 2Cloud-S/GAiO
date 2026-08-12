@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@sanity/code-input": "^7.3.5",
     "@sanity/image-url": "^2.1.1",
     "@sanity/vision": "^6.8.0",
     "class-variance-authority": "^0.7.1",
