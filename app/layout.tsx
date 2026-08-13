@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { StyledComponentsRegistry } from "@/components/styled-components-registry";
 import { buildSiteJsonLd } from "@/lib/json-ld";
 import { siteTagline, siteUrl } from "@/lib/site";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           }}
         />
         <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <Analytics />
       </body>
     </html>
   );
