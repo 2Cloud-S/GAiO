@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Mail } from "lucide-react";
-import type { MouseEvent } from "react";
 import styled from "styled-components";
 
 export type TeamCardSocial = {
@@ -65,13 +64,6 @@ function mailtoHref(address: string) {
   return `mailto:${address.trim()}`;
 }
 
-/** Open the OS/browser mail compose; stopPropagation so parent handlers cannot cancel it. */
-function openMailCompose(event: MouseEvent<HTMLAnchorElement>, href: string) {
-  event.stopPropagation();
-  // Keep the real mailto href for progressive enhancement; assign makes compose reliable.
-  window.location.assign(href);
-}
-
 export function TeamCard({
   name,
   role,
@@ -94,13 +86,7 @@ export function TeamCard({
     <StyledWrapper $tone={avatarTone} $imagePosition={imagePosition}>
       <article className="card" aria-label={`${name}, ${role}`}>
         {isMailto ? (
-          <a
-            className="mail"
-            href={mailHref}
-            aria-label={`Email ${name}`}
-            rel="noopener noreferrer"
-            onClick={(event) => openMailCompose(event, mailHref!)}
-          >
+          <a className="mail" href={mailHref} aria-label={`Email ${name}`}>
             <Mail size={20} strokeWidth={2.25} aria-hidden="true" />
           </a>
         ) : isExternal ? (
@@ -147,12 +133,7 @@ export function TeamCard({
               ))}
             </div>
             {isMailto ? (
-              <a
-                className="contact"
-                href={mailHref}
-                rel="noopener noreferrer"
-                onClick={(event) => openMailCompose(event, mailHref!)}
-              >
+              <a className="contact" href={mailHref}>
                 Contact Me
               </a>
             ) : isExternal ? (
@@ -300,6 +281,8 @@ const StyledWrapper = styled.div<{
     z-index: 2;
     box-shadow: color-mix(in oklch, var(--color-ink) 22%, transparent) 0px 5px 5px 0px inset;
     overflow: hidden;
+    /* Let mail icon (z-index 10) receive clicks when this panel expands on hover */
+    pointer-events: none;
     transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1) 0s;
   }
 
