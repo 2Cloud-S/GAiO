@@ -27,7 +27,9 @@ export function buildSiteJsonLd() {
         slogan: siteTagline,
         logo: {
           "@type": "ImageObject",
-          url: absoluteUrl("/icon"),
+          url: absoluteUrl("/icons/icon-192.png"),
+          width: 192,
+          height: 192,
         },
         employee: team.map((person) => ({
           "@type": "Person",

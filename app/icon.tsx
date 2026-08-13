@@ -1,30 +1,9 @@
 import { ImageResponse } from "next/og";
+import { GaioIconMark } from "@/lib/gaio-icon-mark";
 
-export const size = { width: 32, height: 32 };
+export const size = { width: 48, height: 48 };
 export const contentType = "image/png";
 
 export default function Icon() {
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#000000",
-          color: "#ffffff",
-          fontSize: 11,
-          fontWeight: 800,
-          letterSpacing: "-0.06em",
-          fontFamily: 'Arial Narrow, "Helvetica Neue", Arial, sans-serif',
-          lineHeight: 1,
-        }}
-      >
-        GAiO
-      </div>
-    ),
-    { ...size },
-  );
+  return new ImageResponse(<GaioIconMark size={48} />, { ...size });
 }
