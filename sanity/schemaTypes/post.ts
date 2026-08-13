@@ -2,6 +2,7 @@ import { CodeIcon } from "@sanity/icons/Code";
 import { ImageIcon } from "@sanity/icons/Image";
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { BlockquoteStyle } from "./blockquoteStyle";
+import { postBodyPortableTextPlugins } from "../plugins/portableTextPlugins";
 
 export const postType = defineType({
   name: "post",
@@ -215,14 +216,7 @@ export const postType = defineType({
       ],
       components: {
         portableText: {
-          plugins: (props) =>
-            props.renderDefault({
-              ...props,
-              plugins: {
-                ...props.plugins,
-                table: { enabled: true },
-              },
-            }),
+          plugins: postBodyPortableTextPlugins,
         },
       },
     }),
