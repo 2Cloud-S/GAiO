@@ -17,6 +17,12 @@ export const siteTagline =
 export const siteDescription =
   "GAiO (Generative AI Optimization) is a Generative Engine Optimization (GEO) agency that helps businesses become clearer, more credible, and more discoverable across generative search and Google's AI-powered results.";
 
+/** Public company inboxes — not team personal addresses. */
+export const siteEmails = {
+  connect: "connect@gaioengine.com",
+  support: "support@gaioengine.com",
+} as const;
+
 /** Absolute URL helper for machine-readable surfaces (llms.txt, JSON-LD). */
 export function absoluteUrl(path = "/"): string {
   if (!path || path === "/") return siteUrl;

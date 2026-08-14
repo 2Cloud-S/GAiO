@@ -3,6 +3,7 @@ import {
   absoluteUrl,
   siteAlternateNames,
   siteDescription,
+  siteEmails,
   siteName,
   siteTagline,
   siteUrl,
@@ -31,6 +32,7 @@ export function buildSiteJsonLd() {
           width: 192,
           height: 192,
         },
+        email: siteEmails.connect,
         employee: team.map((person) => ({
           "@type": "Person",
           name: person.name,
@@ -43,7 +45,14 @@ export function buildSiteJsonLd() {
           {
             "@type": "ContactPoint",
             contactType: "sales",
+            email: siteEmails.connect,
             url: absoluteUrl("/book"),
+            availableLanguage: ["English"],
+          },
+          {
+            "@type": "ContactPoint",
+            contactType: "customer support",
+            email: siteEmails.support,
             availableLanguage: ["English"],
           },
         ],

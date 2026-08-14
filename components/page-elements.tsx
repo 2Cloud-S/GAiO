@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { Globe } from "@/components/ui/globe";
+import { siteEmails } from "@/lib/site";
 
 export function LayoutFrame({ children }: { children: ReactNode }) {
   return <div className="site-shell"><SiteHeader /><main>{children}</main><SiteFooter /></div>;
@@ -41,6 +42,12 @@ export function CTA() {
               <Link className="button button-signal" href="/assessment">Start the assessment <ArrowRight size={16} /></Link>
               <Link className="button button-ghost" href="/book">Book a strategy call</Link>
             </div>
+            <p className="cta-contact">
+              Or email{" "}
+              <a href={`mailto:${siteEmails.connect}`} aria-label={`Connect at ${siteEmails.connect}`}>{siteEmails.connect}</a>
+              {" "}or{" "}
+              <a href={`mailto:${siteEmails.support}`} aria-label={`Support at ${siteEmails.support}`}>{siteEmails.support}</a>.
+            </p>
           </div>
         </div>
       </div>

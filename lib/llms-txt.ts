@@ -11,6 +11,7 @@ import {
   absoluteUrl,
   siteAlternateNames,
   siteDescription,
+  siteEmails,
   siteName,
   siteTagline,
   siteUrl,
@@ -83,6 +84,13 @@ function corePages(): LinkItem[] {
   ];
 }
 
+function contactEmailLines(): string[] {
+  return [
+    `- Connect: [${siteEmails.connect}](mailto:${siteEmails.connect}) — new conversations and partnerships.`,
+    `- Support: [${siteEmails.support}](mailto:${siteEmails.support}) — existing work and questions.`,
+  ];
+}
+
 function contactPages(): LinkItem[] {
   return [
     {
@@ -101,6 +109,16 @@ function contactPages(): LinkItem[] {
       note: "Meet Afnan K. (Certified AI Specialist) and Waqas K. (Certified Senior Developer).",
     },
   ];
+}
+
+function contactSection(): string {
+  return [
+    "## Contact",
+    "",
+    ...contactEmailLines(),
+    ...contactPages().map(linkLine),
+    "",
+  ].join("\n");
 }
 
 function referencePages(): LinkItem[] {
@@ -149,7 +167,7 @@ export async function buildLlmsTxt(): Promise<string> {
     "",
     section("Core pages", corePages()),
     section("Insights", insightLinks(posts)),
-    section("Contact", contactPages()),
+    contactSection(),
     section("Optional", referencePages()),
   ];
 
@@ -231,6 +249,7 @@ export async function buildLlmsFullTxt(): Promise<string> {
     ...insightBlocks,
     "## Contact",
     "",
+    ...contactEmailLines(),
     ...contactPages().map(linkLine),
     "",
     "## Machine-readable indexes",

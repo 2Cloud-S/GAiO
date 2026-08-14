@@ -5,6 +5,7 @@ import { ArrowUpRight, AtSign, Menu, Send, X } from "lucide-react";
 import { useState } from "react";
 import { ShareParticleCard } from "@/components/share-particle-card";
 import { navItems } from "@/lib/content";
+import { siteEmails } from "@/lib/site";
 
 export function Brand() {
   return (
@@ -44,13 +45,24 @@ export function SiteFooter() {
             <a href="#social-instagram" aria-label="Social profile placeholder"><AtSign size={16} /></a>
           </div>
         </div>
-        <div className="footer-links">
+        <nav className="footer-links" aria-label="Explore">
           <span className="meta">Explore</span>
           {navItems.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
           <Link href="/assessment">Readiness assessment</Link>
           <a href="/sitemap.xml">Sitemap</a>
           <a href="/llms.txt">llms.txt</a>
-        </div>
+        </nav>
+        <nav className="footer-links footer-contact" aria-label="Contact">
+          <span className="meta">Contact</span>
+          <a href={`mailto:${siteEmails.connect}`} aria-label={`Connect at ${siteEmails.connect}`}>
+            <span>Connect</span>
+            <span className="footer-contact-address">{siteEmails.connect}</span>
+          </a>
+          <a href={`mailto:${siteEmails.support}`} aria-label={`Support at ${siteEmails.support}`}>
+            <span>Support</span>
+            <span className="footer-contact-address">{siteEmails.support}</span>
+          </a>
+        </nav>
         <ShareParticleCard />
       </div>
     </footer>
