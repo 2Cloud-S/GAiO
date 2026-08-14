@@ -1,3 +1,4 @@
+import { AiOverviewProof } from "@/components/ai-overview-proof";
 import { LayoutFrame, PageHero, CTA } from "@/components/page-elements";
 import { CountUp, Highlighter, PixelProof } from "@/components/visuals";
 import { proofs } from "@/lib/content";
@@ -30,10 +31,23 @@ export default function ProofPage() {
           </div>
         </div>
       </section>
+      <section className="section section-muted">
+        <div className="wrap">
+          <div className="section-intro">
+            <p className="eyebrow">Citation readiness</p>
+            <h2 className="display section-title">When evidence surfaces in generative search.</h2>
+            <p className="lede">
+              Approved proof from a live Google AI Overview—distinct from the illustrative sample scenarios below.
+            </p>
+          </div>
+          <AiOverviewProof variant="evidence" />
+        </div>
+      </section>
       <section className="section">
         <div className="wrap">
           <div className="section-intro">
             <p className="eyebrow">Illustrative scenarios</p>
+            <h2 className="display section-title">Sample query-to-source patterns.</h2>
           </div>
           <div className="card-grid">
             {proofs.map((proof) => (

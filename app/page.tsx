@@ -4,6 +4,7 @@ import { LayoutFrame, CTA } from "@/components/page-elements";
 import { BlogPostCard } from "@/components/blog-post-card";
 import { TeamCard } from "@/components/team-card";
 import { Marquee } from "@/components/ui/marquee";
+import { AiOverviewProof } from "@/components/ai-overview-proof";
 import { CountUp, EngineCloud, HeroGeoMap, Highlighter, KineticText, LineShadowText, MethodFlow, MorphStatement, PixelProof, Text3DFlip, TextReveal } from "@/components/visuals";
 import { blogHref, blogListingHref, faqs, methodSteps, proofs, services, team, testimonials } from "@/lib/content";
 import { getLatestInsightPosts } from "@/sanity/lib/posts";
@@ -34,12 +35,12 @@ export default async function HomePage() {
           <p className="eyebrow">AI-result gallery</p>
           <h2 className="display section-title">How a useful query can lead to a defensible source.</h2>
         </div>
+        <AiOverviewProof variant="featured" />
       </div>
       <div className="gallery-marquee">
         <Marquee pauseOnHover className="[--duration:36s] [--gap:var(--space-4)]">
           {proofs.map((proof) => (
             <article className="query-card" key={proof.company}>
-              <span className="sample-label">Sample scenario</span>
               <strong>{proof.query}</strong>
               <small>Source: {proof.source}</small>
             </article>

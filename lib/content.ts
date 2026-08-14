@@ -206,3 +206,14 @@ export const articles: Article[] = [
 ];
 
 export const bookingSlots = ["09:30", "11:00", "14:00", "15:30"];
+
+/** Real Google AI Overview citation — approved evidence, not an illustrative sample. */
+export const aiOverviewProof = {
+  imageSrc: "/gallery/google-ai-overview-gaio-citation.png",
+  imageWidth: 924,
+  imageHeight: 734,
+  querySlug: "the-2026-state-of-ai-search-traffic-citations-and-discovery",
+  queryLabel: "2026 state of AI search traffic, citations & discovery",
+  sourceName: "GaioEngine",
+  engine: "Google AI Overview",
+} as const;
