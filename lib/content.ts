@@ -207,13 +207,61 @@ export const articles: Article[] = [
 
 export const bookingSlots = ["09:30", "11:00", "14:00", "15:30"];
 
-/** Real Google AI Overview citation — approved evidence, not an illustrative sample. */
-export const aiOverviewProof = {
-  imageSrc: "/gallery/google-ai-overview-gaio-citation.png",
-  imageWidth: 924,
-  imageHeight: 734,
-  querySlug: "the-2026-state-of-ai-search-traffic-citations-and-discovery",
-  queryLabel: "2026 state of AI search traffic, citations & discovery",
-  sourceName: "GaioEngine",
-  engine: "Google AI Overview",
-} as const;
+/** Real Google AI Overview citations — approved evidence, not illustrative samples. */
+export type AiOverviewProofItem = {
+  id: string;
+  imageSrc: string;
+  imageWidth: number;
+  imageHeight: number;
+  /** CSS object-position so cover framing keeps the citation in view. */
+  imageObjectPosition?: string;
+  /** Blog post slug when the cited article exists; omit to link to the blog listing. */
+  querySlug?: string;
+  queryLabel: string;
+  sourceName: string;
+  engine: string;
+  /** Short alt fragment describing what the screenshot shows. */
+  imageAltTopic: string;
+  featuredTitle: string;
+  evidenceTitle: string;
+  lede: string;
+};
+
+export const aiOverviewProofs: readonly AiOverviewProofItem[] = [
+  {
+    id: "ai-search-traffic-citations",
+    imageSrc: "/gallery/google-ai-overview-gaio-citation.png",
+    imageWidth: 924,
+    imageHeight: 734,
+    imageObjectPosition: "top center",
+    querySlug: "the-2026-state-of-ai-search-traffic-citations-and-discovery",
+    queryLabel: "2026 state of AI search traffic, citations & discovery",
+    sourceName: "GaioEngine",
+    engine: "Google AI Overview",
+    imageAltTopic: "AI search traffic, citations, and discovery",
+    featuredTitle: "GaioEngine cited as a source in Google AI Overview.",
+    evidenceTitle: "Observed citation in Google AI Overview.",
+    lede:
+      "For a query on AI search traffic and citations, Google's AI Overview referenced GaioEngine as a source. One observed instance—not a promise of permanent visibility.",
+  },
+  {
+    id: "seo-geo-questions-2026",
+    imageSrc: "/gallery/google-ai-overview-gaio-citation-seo-geo-questions.png",
+    imageWidth: 1024,
+    imageHeight: 469,
+    /* Keep AI Overview body + gaioengine.com citation in the shared 924/734 cover frame. */
+    imageObjectPosition: "48% center",
+    querySlug: "seo-vs-geo-ai-search-questions-2026",
+    queryLabel: "Can AI find your website? SEO & GEO questions for 2026",
+    sourceName: "GaioEngine",
+    engine: "Google AI Overview",
+    imageAltTopic: "SEO and GEO questions for 2026",
+    featuredTitle: "GaioEngine cited among AI Overview source cards.",
+    evidenceTitle: "Observed citation in Google AI Overview.",
+    lede:
+      "For a query on SEO and GEO questions for 2026, Google's AI Overview listed GaioEngine among its source cards. One observed instance—not a promise of permanent visibility.",
+  },
+] as const;
+
+/** First proof — kept for any single-item consumers. */
+export const aiOverviewProof = aiOverviewProofs[0];

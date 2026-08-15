@@ -218,12 +218,55 @@ button { cursor: pointer; }
 }
 
 /* AI Overview citation proof card */
+.ai-overview-proof-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  margin-top: var(--space-10);
+  min-width: 0;
+  width: 100%;
+  align-items: stretch;
+}
+@media (min-width: 960px) {
+  .ai-overview-proof-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+  .ai-overview-proof-list .ai-overview-proof {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    align-items: stretch;
+    height: 100%;
+  }
+  .ai-overview-proof-list .ai-overview-proof-copy {
+    order: 2;
+    display: grid;
+    grid-template-rows: auto auto minmax(4.5rem, auto) minmax(2.75rem, auto) auto;
+    gap: var(--space-4);
+    align-content: start;
+    flex: 1;
+  }
+  .ai-overview-proof-list .ai-overview-proof-visual { order: 1; }
+  .ai-overview-proof-list .ai-overview-proof-title,
+  .ai-overview-proof-list h3 {
+    max-width: none;
+    min-height: 2.75em;
+  }
+  .ai-overview-proof-list .ai-overview-proof-lede {
+    max-width: none;
+    min-height: 4.5rem;
+  }
+  .ai-overview-proof-list .ai-overview-proof-query {
+    min-height: 2.75rem;
+    width: 100%;
+  }
+}
 .ai-overview-proof {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   gap: clamp(var(--space-6), 4vw, var(--space-12));
-  align-items: center;
-  margin-top: var(--space-10);
+  align-items: stretch;
+  margin-top: 0;
   border: 1px solid color-mix(in oklch, var(--color-paper) 18%, transparent);
   border-radius: var(--radius-xl);
   background:
@@ -232,8 +275,9 @@ button { cursor: pointer; }
   padding: clamp(var(--space-6), 4vw, var(--space-10));
   color: var(--color-paper);
   min-width: 0;
+  width: 100%;
 }
-.ai-overview-proof-featured { margin-bottom: var(--space-4); }
+.ai-overview-proof-featured { margin-bottom: 0; }
 .ai-overview-proof-evidence {
   margin-top: 0;
   background:
@@ -248,12 +292,14 @@ button { cursor: pointer; }
   align-items: flex-start;
   gap: var(--space-4);
   min-width: 0;
+  height: 100%;
 }
 .ai-overview-proof-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
+  min-height: 1.75rem;
 }
 .ai-overview-proof-badge {
   background: var(--color-paper);
@@ -280,10 +326,9 @@ button { cursor: pointer; }
   letter-spacing: var(--tracking-title);
   max-width: 22ch;
 }
-.ai-overview-proof-evidence h3 {
-  margin: 0;
-  font-size: clamp(1.35rem, 2vw + 0.85rem, 2rem);
+.ai-overview-proof-evidence .ai-overview-proof-title {
   max-width: 24ch;
+  color: inherit;
 }
 .ai-overview-proof-lede {
   margin: 0;
@@ -301,11 +346,12 @@ button { cursor: pointer; }
   gap: var(--space-2);
   max-width: 100%;
   border: 1px solid color-mix(in oklch, var(--color-paper) 22%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   background: color-mix(in oklch, var(--color-ink) 72%, transparent);
   padding: .45rem .75rem;
   color: var(--color-paper-soft);
   font: 600 var(--text-xs)/var(--leading-snug) var(--font-mono);
+  overflow-wrap: anywhere;
   word-break: break-word;
 }
 .ai-overview-proof-evidence .ai-overview-proof-query {
@@ -318,7 +364,8 @@ button { cursor: pointer; }
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
   color: var(--color-signal);
   font: 700 var(--text-sm)/1 var(--font-mono);
   letter-spacing: var(--tracking-meta);
@@ -355,7 +402,8 @@ button { cursor: pointer; }
   overflow: clip;
   border-radius: var(--radius-lg);
   border: 1px solid color-mix(in oklch, var(--color-paper) 12%, transparent);
-  background: var(--color-ink);
+  background: #1f1f1f;
+  aspect-ratio: 924 / 734;
 }
 .ai-overview-proof-evidence .ai-overview-proof-screen {
   border-color: color-mix(in oklch, var(--color-ink) 12%, transparent);
@@ -363,7 +411,9 @@ button { cursor: pointer; }
 .ai-overview-proof-image {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
   vertical-align: middle;
 }
 .ai-overview-proof-caption {
@@ -990,8 +1040,7 @@ button { cursor: pointer; }
   }
   .ai-overview-proof-copy { order: 2; }
   .ai-overview-proof-visual { order: 1; }
-  .ai-overview-proof-title,
-  .ai-overview-proof-evidence h3 { max-width: none; }
+  .ai-overview-proof-title { max-width: none; }
   .ai-overview-proof-lede { max-width: none; }
   .reading-rail { position: static; border-left: 0; border-top: var(--rule); padding: var(--space-4) 0 0; }
   .post-comment-grid { grid-template-columns: minmax(0, 1fr); }

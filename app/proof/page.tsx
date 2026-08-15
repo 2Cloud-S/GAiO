@@ -1,4 +1,4 @@
-import { AiOverviewProof } from "@/components/ai-overview-proof";
+import { AiOverviewProofList } from "@/components/ai-overview-proof";
 import { AuraFeaturedBadge } from "@/components/aura-featured-badge";
 import { LayoutFrame, PageHero, CTA } from "@/components/page-elements";
 import { CountUp, Highlighter, PixelProof } from "@/components/visuals";
@@ -38,10 +38,10 @@ export default function ProofPage() {
             <p className="eyebrow">Citation readiness</p>
             <h2 className="display section-title">When evidence surfaces in generative search.</h2>
             <p className="lede">
-              Approved proof from a live Google AI Overview—distinct from the illustrative sample scenarios below.
+              Approved proofs from live Google AI Overviews—distinct from the illustrative sample scenarios below.
             </p>
           </div>
-          <AiOverviewProof variant="evidence" />
+          <AiOverviewProofList variant="evidence" />
           <AuraFeaturedBadge className="aura-featured-inline" tone="light" />
         </div>
       </section>
