@@ -378,6 +378,53 @@ button { cursor: pointer; }
   text-align: center;
   text-wrap: pretty;
 }
+/* Aura++ featured backlink — soft pill so light SVG reads on dark sections */
+.aura-featured {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content;
+  max-width: 100%;
+}
+.aura-featured-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  max-width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklch, var(--color-paper) 92%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-paper) 18%, transparent);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.aura-featured-link:hover { opacity: .9; }
+.aura-featured-link:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+}
+.aura-featured-light .aura-featured-link {
+  background: var(--color-paper);
+  box-shadow: 0 0 0 1px var(--color-rule);
+}
+.aura-featured-badge {
+  display: block;
+  width: 16.5625rem;
+  max-width: min(100%, 16.5625rem);
+  height: auto;
+}
+.aura-featured-section {
+  padding-top: 0;
+  padding-bottom: var(--space-16);
+}
+.aura-featured-section .wrap {
+  display: flex;
+  justify-content: flex-start;
+}
+.aura-featured-inline {
+  margin-top: var(--space-10);
+}
+
 .ai-overview-proof-evidence .ai-overview-proof-caption {
   border-top-color: color-mix(in oklch, var(--color-ink) 10%, transparent);
   color: var(--color-muted);

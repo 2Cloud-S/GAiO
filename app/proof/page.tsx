@@ -1,4 +1,5 @@
 import { AiOverviewProof } from "@/components/ai-overview-proof";
+import { AuraFeaturedBadge } from "@/components/aura-featured-badge";
 import { LayoutFrame, PageHero, CTA } from "@/components/page-elements";
 import { CountUp, Highlighter, PixelProof } from "@/components/visuals";
 import { proofs } from "@/lib/content";
@@ -41,6 +42,7 @@ export default function ProofPage() {
             </p>
           </div>
           <AiOverviewProof variant="evidence" />
+          <AuraFeaturedBadge className="aura-featured-inline" tone="light" />
         </div>
       </section>
       <section className="section">

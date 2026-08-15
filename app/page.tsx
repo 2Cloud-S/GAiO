@@ -5,6 +5,7 @@ import { BlogPostCard } from "@/components/blog-post-card";
 import { TeamCard } from "@/components/team-card";
 import { Marquee } from "@/components/ui/marquee";
 import { AiOverviewProof } from "@/components/ai-overview-proof";
+import { AuraFeaturedBadge } from "@/components/aura-featured-badge";
 import { CountUp, EngineCloud, HeroGeoMap, Highlighter, KineticText, LineShadowText, MethodFlow, MorphStatement, PixelProof, Text3DFlip, TextReveal } from "@/components/visuals";
 import { blogHref, blogListingHref, faqs, methodSteps, proofs, services, team, testimonials } from "@/lib/content";
 import { getLatestInsightPosts } from "@/sanity/lib/posts";
@@ -48,6 +49,12 @@ export default async function HomePage() {
         </Marquee>
         <div className="gallery-marquee-fade gallery-marquee-fade-left" aria-hidden="true" />
         <div className="gallery-marquee-fade gallery-marquee-fade-right" aria-hidden="true" />
+      </div>
+    </section>
+
+    <section className="section section-dark aura-featured-section" aria-label="Featured on Aura++">
+      <div className="wrap">
+        <AuraFeaturedBadge />
       </div>
     </section>
 
