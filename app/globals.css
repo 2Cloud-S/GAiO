@@ -532,11 +532,66 @@ button { cursor: pointer; }
 .faq-list details[open] summary::after { content: "−"; }
 .faq-list p { max-width: 43rem; margin: var(--space-4) 0 0; color: var(--color-graphite); font-size: var(--text-base); line-height: var(--leading-body); }
 
-.cta-panel { position: relative; overflow: clip; border-radius: var(--radius-xl); background: var(--color-ink); color: var(--color-paper); padding: clamp(2rem, 7vw, 6rem); }
-.cta-panel::after { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(90deg, var(--color-ink) 0%, var(--color-ink) 38%, transparent 72%); }
-.cta-globe { position: absolute; z-index: 0; top: 50%; right: -6%; width: min(52%, 30rem); aspect-ratio: 1; transform: translateY(-48%); pointer-events: none; opacity: .9; }
-.cta-globe-visual { position: relative !important; inset: auto !important; max-width: none; width: 100%; height: 100%; }
-.cta-copy { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; max-width: min(34rem, 58%); }
+.cta-panel {
+  position: relative;
+  overflow: clip;
+  border-radius: var(--radius-xl);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: clamp(2rem, 7vw, 6rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(13rem, 0.85fr);
+  align-items: center;
+  column-gap: clamp(0.5rem, 1.75vw, 1.5rem);
+  min-height: clamp(22rem, 34vw, 28rem);
+}
+.cta-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--color-ink) 0%,
+    var(--color-ink) 34%,
+    color-mix(in oklch, var(--color-ink) 82%, transparent) 48%,
+    transparent 76%
+  );
+}
+.cta-globe {
+  position: relative;
+  z-index: 0;
+  grid-column: 2;
+  grid-row: 1;
+  width: min(100%, 34rem);
+  max-width: 100%;
+  aspect-ratio: 1;
+  justify-self: center;
+  margin-inline: auto;
+  pointer-events: none;
+  opacity: .92;
+  /* Nudge toward copy without leaving the panel or covering CTAs */
+  transform: translateX(-6%);
+  transform-origin: center;
+}
+.cta-globe-visual {
+  position: relative !important;
+  inset: auto !important;
+  max-width: none !important;
+  width: 100%;
+  height: 100%;
+}
+.cta-copy {
+  position: relative;
+  z-index: 1;
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 36rem;
+}
 .cta-panel .section-title { max-width: 12ch; }
 .cta-panel .lede,
 .cta-copy .lede { margin-top: var(--space-5); color: var(--color-paper-soft); }
@@ -1049,28 +1104,49 @@ button { cursor: pointer; }
   .post-comment-grid { grid-template-columns: minmax(0, 1fr); }
   .stepper { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }.step small { display: none; }.booking-shell { padding: var(--space-5); }.calendar-grid > i, .calendar-grid > button { min-height: 3.5rem; padding: var(--space-2); }.slot-panel { align-items: flex-start; flex-direction: column; }
   .cta-panel {
-    padding-bottom: clamp(8.5rem, 46vw, 13rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+    justify-items: stretch;
+    column-gap: 0;
+    row-gap: var(--space-6);
+    min-height: 0;
+    padding-bottom: clamp(2.5rem, 10vw, 4rem);
   }
   .cta-panel::after {
     background: linear-gradient(
       180deg,
       var(--color-ink) 0%,
-      var(--color-ink) 38%,
-      color-mix(in oklch, var(--color-ink) 72%, transparent) 58%,
-      transparent 88%
+      var(--color-ink) 42%,
+      color-mix(in oklch, var(--color-ink) 78%, transparent) 62%,
+      transparent 90%
     );
   }
   .cta-globe {
+    position: relative;
+    grid-column: 1;
+    grid-row: 2;
     display: block;
-    width: min(78%, 17.5rem);
-    right: 50%;
-    left: auto;
+    width: min(72vw, 18rem);
+    max-width: 100%;
+    inset: auto;
     top: auto;
-    bottom: -10%;
-    transform: translateX(50%);
+    right: auto;
+    bottom: auto;
+    left: auto;
+    margin-inline: auto;
+    margin-bottom: -1.25rem;
+    justify-self: center;
+    transform: none;
+    transform-origin: center bottom;
     opacity: .62;
   }
-  .cta-copy { max-width: none; }
+  .cta-copy {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: none;
+  }
   /* Lighten continuous decorative loops on small viewports */
   .orbit-map::before { animation: none; }
   .print-bars i { animation: none; height: .85rem; opacity: .85; }
@@ -1083,9 +1159,14 @@ button { cursor: pointer; }
 }
 
 @media (max-width: 520px) {
+  .cta-panel {
+    padding-bottom: clamp(2rem, 8vw, 3.5rem);
+    row-gap: var(--space-5);
+  }
   .cta-globe {
-    width: min(92%, 15.5rem);
-    bottom: -12%;
+    width: min(78vw, 16rem);
+    max-width: 100%;
+    margin-bottom: -1.5rem;
     opacity: .55;
   }
   .blog-card-grid { grid-template-columns: minmax(0, 1fr); }
