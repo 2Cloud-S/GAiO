@@ -109,7 +109,7 @@ export function AiOverviewProof({
             alt={`${proof.engine} result citing ${proof.sourceName} for a query about ${proof.imageAltTopic}.`}
             width={proof.imageWidth}
             height={proof.imageHeight}
-            sizes="(max-width: 800px) 100vw, (max-width: 1100px) 100vw, (max-width: 1200px) 50vw, 28rem"
+            sizes="(max-width: 959px) 100vw, (max-width: 1279px) 50vw, 33vw"
             className="ai-overview-proof-image"
             style={{ objectPosition: proof.imageObjectPosition ?? "top center" }}
             priority={isFeatured && index === 0}

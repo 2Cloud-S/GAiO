@@ -261,6 +261,23 @@ export const aiOverviewProofs: readonly AiOverviewProofItem[] = [
     lede:
       "For a query on SEO and GEO questions for 2026, Google's AI Overview listed GaioEngine among its source cards. One observed instance—not a promise of permanent visibility.",
   },
+  {
+    id: "stale-content-ai-search-refresh",
+    imageSrc: "/gallery/google-ai-overview-gaio-citation-stale-content.png",
+    imageWidth: 961,
+    imageHeight: 845,
+    /* Keep AI Overview body + gaioengine.com citation card in the shared 924/734 cover frame. */
+    imageObjectPosition: "top center",
+    querySlug: "stale-content-ai-search-refresh-rules",
+    queryLabel: "Is Your Content Stale? 6 AI Search Refresh Rules",
+    sourceName: "GaioEngine",
+    engine: "Google AI Overview",
+    imageAltTopic: "stale content and AI search refresh rules",
+    featuredTitle: "GaioEngine cited for stale-content refresh guidance.",
+    evidenceTitle: "Observed citation in Google AI Overview.",
+    lede:
+      "For a query on AI search refresh rules for stale content, Google's AI Overview referenced GaioEngine as a source. One observed instance—not a promise of permanent visibility.",
+  },
 ] as const;
 
 /** First proof — kept for any single-item consumers. */
