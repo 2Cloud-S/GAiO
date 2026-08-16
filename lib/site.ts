@@ -23,6 +23,14 @@ export const siteEmails = {
   support: "support@gaioengine.com",
 } as const;
 
+/** Official GAiO social profiles — single source of truth for footer and machine surfaces. */
+export const siteSocials = {
+  facebook: "https://www.facebook.com/profile.php?id=61593077471387",
+  tiktok: "https://www.tiktok.com/@gaioengine",
+  instagram: "https://www.instagram.com/gaioengine/",
+  x: "https://x.com/Gaioengine",
+} as const;
+
 /** Absolute URL helper for machine-readable surfaces (llms.txt, JSON-LD). */
 export function absoluteUrl(path = "/"): string {
   if (!path || path === "/") return siteUrl;

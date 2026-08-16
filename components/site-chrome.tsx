@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, AtSign, Menu, Send, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { ShareParticleCard } from "@/components/share-particle-card";
+import { SocialsCard } from "@/components/socials-card";
 import { navItems } from "@/lib/content";
 import { siteEmails } from "@/lib/site";
 
@@ -40,10 +41,7 @@ export function SiteFooter() {
         <div>
           <Brand />
           <p className="footer-blurb">A practical GEO partner for organisations that want their expertise to be understood, evidenced, and discoverable in generative search.</p>
-          <div className="socials" aria-label="Social links">
-            <a href="#social-linkedin" aria-label="Professional social placeholder"><Send size={16} /></a>
-            <a href="#social-instagram" aria-label="Social profile placeholder"><AtSign size={16} /></a>
-          </div>
+          <SocialsCard />
         </div>
         <nav className="footer-links" aria-label="Explore">
           <span className="meta">Explore</span>

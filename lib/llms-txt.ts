@@ -13,6 +13,7 @@ import {
   siteDescription,
   siteEmails,
   siteName,
+  siteSocials,
   siteTagline,
   siteUrl,
 } from "@/lib/site";
@@ -88,6 +89,10 @@ function contactEmailLines(): string[] {
   return [
     `- Connect: [${siteEmails.connect}](mailto:${siteEmails.connect}) — new conversations and partnerships.`,
     `- Support: [${siteEmails.support}](mailto:${siteEmails.support}) — existing work and questions.`,
+    `- Instagram: [${siteSocials.instagram}](${siteSocials.instagram})`,
+    `- X: [${siteSocials.x}](${siteSocials.x})`,
+    `- Facebook: [${siteSocials.facebook}](${siteSocials.facebook})`,
+    `- TikTok: [${siteSocials.tiktok}](${siteSocials.tiktok})`,
   ];
 }
 
