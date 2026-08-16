@@ -2,14 +2,14 @@
 
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
-import { siteSocials } from "@/lib/site";
+import { siteName, siteSocials } from "@/lib/site";
 
-/** Adapted from Uiverse.io / Smit-Prajapati/massive-insect-5 — themed for GAiO. */
+/** Adapted from Uiverse.io / Smit-Prajapati/massive-insect-5 — themed for GAiO Engine. */
 
 const LINKS = [
   {
     key: "instagram",
-    label: "GAiO on Instagram",
+    label: `${siteName} on Instagram`,
     href: siteSocials.instagram,
     box: "box1",
     icon: (
@@ -20,7 +20,7 @@ const LINKS = [
   },
   {
     key: "x",
-    label: "GAiO on X",
+    label: `${siteName} on X`,
     href: siteSocials.x,
     box: "box2",
     icon: (
@@ -31,7 +31,7 @@ const LINKS = [
   },
   {
     key: "facebook",
-    label: "GAiO on Facebook",
+    label: `${siteName} on Facebook`,
     href: siteSocials.facebook,
     box: "box3",
     icon: (
@@ -42,7 +42,7 @@ const LINKS = [
   },
   {
     key: "tiktok",
-    label: "GAiO on TikTok",
+    label: `${siteName} on TikTok`,
     href: siteSocials.tiktok,
     box: "box4",
     icon: (
@@ -77,7 +77,7 @@ export function SocialsCard() {
       <div
         ref={cardRef}
         className={active ? "card is-active" : "card"}
-        aria-label="GAiO social profiles"
+        aria-label={`${siteName} social profiles`}
       >
         <div className="background" aria-hidden="true" />
         <div className="logo" aria-hidden="true">

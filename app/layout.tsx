@@ -2,12 +2,15 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { StyledComponentsRegistry } from "@/components/styled-components-registry";
 import { buildSiteJsonLd } from "@/lib/json-ld";
-import { siteTagline, siteUrl } from "@/lib/site";
+import { siteName, siteTagline, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: "GAiO — Generative AI Optimization", template: "%s | GAiO" },
+  title: {
+    default: `${siteName} — Generative AI Optimization`,
+    template: `%s | ${siteName}`,
+  },
   description: siteTagline,
   alternates: {
     canonical: "/",

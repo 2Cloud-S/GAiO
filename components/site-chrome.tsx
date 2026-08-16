@@ -6,12 +6,12 @@ import { useState } from "react";
 import { ShareParticleCard } from "@/components/share-particle-card";
 import { SocialsCard } from "@/components/socials-card";
 import { navItems } from "@/lib/content";
-import { siteEmails } from "@/lib/site";
+import { siteEmails, siteName } from "@/lib/site";
 
 export function Brand() {
   return (
-    <Link className="brand" href="/" aria-label="GAiO home">
-      GAiO
+    <Link className="brand" href="/" aria-label={`${siteName} home`}>
+      {siteName}
     </Link>
   );
 }

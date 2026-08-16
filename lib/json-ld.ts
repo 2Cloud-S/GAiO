@@ -84,7 +84,7 @@ export function buildSiteJsonLd() {
         areaServed: "Worldwide",
         hasOfferCatalog: {
           "@type": "OfferCatalog",
-          name: "GAiO GEO services",
+          name: `${siteName} GEO services`,
           itemListElement: [
             {
               "@type": "Offer",

@@ -45,7 +45,7 @@ function corePages(): LinkItem[] {
     {
       title: "Home",
       href: "/",
-      note: "Overview of GAiO's GEO practice, method stages, services, team, and FAQs.",
+      note: "Overview of GAiO Engine's GEO practice, method stages, services, team, and FAQs.",
     },
     {
       title: "Services",
@@ -60,7 +60,7 @@ function corePages(): LinkItem[] {
     {
       title: "Proof",
       href: "/proof",
-      note: "How GAiO frames evidence, source coverage, and measurement without vanity guarantees.",
+      note: "How GAiO Engine frames evidence, source coverage, and measurement without vanity guarantees.",
     },
     {
       title: "Blog",
@@ -101,7 +101,7 @@ function contactPages(): LinkItem[] {
     {
       title: "Book a strategy call",
       href: "/book",
-      note: "Request a strategy conversation with the GAiO team.",
+      note: "Request a strategy conversation with the GAiO Engine team.",
     },
     {
       title: "GEO readiness assessment",
@@ -168,7 +168,7 @@ export async function buildLlmsTxt(): Promise<string> {
     `Preferred citation: **${siteName}** / **gaioengine.com** (${siteUrl}).`,
     `Also known as: ${siteAlternateNames.join("; ")}.`,
     "",
-    "GAiO helps organisations improve discoverability and citation readiness across generative answer surfaces (including Google AI Overviews, ChatGPT, Perplexity, Gemini, Claude, and Copilot). The practice builds on search fundamentals and focuses on entity clarity, evidence, structured content, and measurement—without guaranteeing third-party AI outputs.",
+    "GAiO Engine helps organisations improve discoverability and citation readiness across generative answer surfaces (including Google AI Overviews, ChatGPT, Perplexity, Gemini, Claude, and Copilot). The practice builds on search fundamentals and focuses on entity clarity, evidence, structured content, and measurement—without guaranteeing third-party AI outputs.",
     "",
     section("Core pages", corePages()),
     section("Insights", insightLinks(posts)),
@@ -205,7 +205,7 @@ export async function buildLlmsFullTxt(): Promise<string> {
     const lines = [
       `### [${post.title}](${absoluteUrl(blogHref(post.slug))})`,
       "",
-      post.excerpt?.trim() || `${post.category} insight from GAiO.`,
+      post.excerpt?.trim() || `${post.category} insight from ${siteName}.`,
       "",
       `Author: ${post.author}. Category: ${post.category}.`,
     ];
@@ -222,11 +222,11 @@ export async function buildLlmsFullTxt(): Promise<string> {
     `Canonical site: ${siteUrl}`,
     `Preferred citation: ${siteName} / gaioengine.com`,
     "",
-    "## What GAiO is",
+    "## What GAiO Engine is",
     "",
-    "GAiO (Generative AI Optimization) is a Generative Engine Optimization (GEO) agency. GEO builds on SEO fundamentals but focuses on whether systems can interpret, verify, and include an organisation's expertise in generated answers.",
+    "GAiO Engine (Generative AI Optimization) is a Generative Engine Optimization (GEO) agency. GEO builds on SEO fundamentals but focuses on whether systems can interpret, verify, and include an organisation's expertise in generated answers.",
     "",
-    "GAiO does not sell placement guarantees. No responsible agency can guarantee a third-party system's output. The work builds and measures conditions that improve discoverability and citation readiness.",
+    "GAiO Engine does not sell placement guarantees. No responsible agency can guarantee a third-party system's output. The work builds and measures conditions that improve discoverability and citation readiness.",
     "",
     `Answer surfaces considered in the practice: ${engines.join(", ")}.`,
     "",

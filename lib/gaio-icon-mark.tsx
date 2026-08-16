@@ -1,4 +1,9 @@
-/** Shared GAiO favicon mark for ImageResponse routes (`app/icon.tsx`, etc.). */
+/** Shared favicon mark for ImageResponse routes (`app/icon.tsx`, etc.).
+ * Tiny sizes: "G". Larger icons: short wordmark `siteShortName` ("GAiO") —
+ * full "GAiO Engine" does not fit square favicons.
+ */
+
+import { siteShortName } from "@/lib/site";
 
 type GaioIconMarkProps = {
   size: number;
@@ -7,8 +12,8 @@ type GaioIconMarkProps = {
 };
 
 export function GaioIconMark({ size, variant = "transparent" }: GaioIconMarkProps) {
-  // Match static generator: "G" through 48px, full wordmark above that.
-  const label = size <= 48 ? "G" : "GAiO";
+  // Match static generator: "G" through 48px, short wordmark above that.
+  const label = size <= 48 ? "G" : siteShortName;
   const fontSize =
     size <= 16 ? 14 : size <= 32 ? 28 : size <= 48 ? 36 : size <= 180 ? 54 : size <= 192 ? 58 : 168;
 

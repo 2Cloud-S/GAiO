@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Generate static GAiO favicon assets for Google Search and PWA surfaces.
+"""Generate static GAiO Engine favicon assets for Google Search and PWA surfaces.
 
 Renders at high resolution, then downscales with LANCZOS for crisp edges.
 Tab/favicon assets use a transparent background; the 512 maskable PWA icon
 keeps an opaque dark fill for iOS/Android safe-zone requirements.
+
+Tiny sizes use a single "G"; mid/large squares use the short wordmark "GAiO"
+(full "GAiO Engine" does not fit a square mark).
 """
 
 from __future__ import annotations
@@ -44,7 +47,7 @@ def load_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
 
 
 def label_for(size: int) -> str:
-    # Single "G" stays sharp through 48px (tabs + Google). Full wordmark above that.
+    # Single "G" stays sharp through 48px (tabs + Google). Short wordmark above that.
     return "G" if size <= 48 else "GAiO"
 
 

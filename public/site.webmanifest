@@ -1,6 +1,6 @@
 {
-  "name": "GAiO — Generative AI Optimization",
-  "short_name": "GAiO",
+  "name": "GAiO Engine — Generative AI Optimization",
+  "short_name": "GAiO Engine",
   "description": "A practical GEO partner for organisations that want their expertise to be understood, evidenced, and discoverable in generative search.",
   "start_url": "/",
   "display": "standalone",

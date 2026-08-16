@@ -12,7 +12,7 @@ const resolvedProjectId = projectId || "your-project-id";
 
 export default defineConfig({
   name: "generative-ai-optimization",
-  title: "GAiO Insights",
+  title: "GAiO Engine Insights",
   basePath: "/studio",
   projectId: resolvedProjectId,
   dataset,

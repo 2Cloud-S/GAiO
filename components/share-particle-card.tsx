@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styled from "styled-components";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { siteName } from "@/lib/site";
 
 /** Card stage size — positions are relative to this box. */
 const STAGE_W = 200;
@@ -13,7 +14,7 @@ const PITCH = 7;
 
 type Cell = { x: number; y: number; size?: number };
 
-/** 5×7 bitmaps for G, A, i, O — 1 = particle. */
+/** 5×7 bitmaps for G, A, i, O — short mark; full name is in the label + aria. */
 const GLYPHS: Record<string, string[]> = {
   G: [
     "01110",
@@ -150,7 +151,7 @@ export function ShareParticleCard() {
         ref={cardRef}
         className={converged ? "card is-converged" : "card"}
         href="/assessment"
-        aria-label="Share the assessment — open readiness assessment"
+        aria-label={`Share the assessment — ${siteName}`}
       >
         <div className="stage" aria-hidden="true">
           {DOTS.map((dot) => (
@@ -171,7 +172,7 @@ export function ShareParticleCard() {
           ))}
         </div>
         <div className="label" aria-hidden="true">
-          GAiO
+          {siteName}
         </div>
       </Link>
     </StyledWrapper>
