@@ -5,5 +5,7 @@ export const size = { width: 48, height: 48 };
 export const contentType = "image/png";
 
 export default function Icon() {
-  return new ImageResponse(<GaioIconMark size={48} />, { ...size });
+  return new ImageResponse(<GaioIconMark size={48} variant="transparent" />, {
+    ...size,
+  });
 }
