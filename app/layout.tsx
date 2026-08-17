@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   description: siteTagline,
   alternates: {
-    canonical: "/",
+    canonical: "./",
   },
   icons: {
     icon: [
