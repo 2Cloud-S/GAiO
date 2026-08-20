@@ -1,5 +1,5 @@
 import { LayoutFrame, PageHero } from "@/components/page-elements";
-import { BookingDemo } from "@/components/interactive";
+import { CalEmbed } from "@/components/cal-embed";
 import { siteEmails } from "@/lib/site";
 
 export const metadata = { title: "Book a Strategy Call" };
@@ -10,7 +10,7 @@ export default function BookPage() {
       <PageHero
         eyebrow="Strategy call"
         title="Find a useful starting point together."
-        copy="Choose a demonstration slot to see the branded scheduling experience. A real provider can be connected in the launch configuration."
+        copy="Pick a time that works for you. We will walk through your current visibility in AI search and identify a practical next step."
         action={false}
       />
       <section className="section section-muted">
@@ -28,7 +28,7 @@ export default function BookPage() {
               for existing work.
             </p>
           </div>
-          <BookingDemo />
+          <CalEmbed />
         </div>
       </section>
     </LayoutFrame>

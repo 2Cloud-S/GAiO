@@ -1,0 +1,83 @@
+/* Scoped to the book page Cal embed — imported from cal-embed.tsx so Turbopack cannot drop these rules from globals. */
+.cal-embed-shell {
+  position: relative;
+  width: 100%;
+  min-height: 42rem;
+  overflow: clip;
+  border: 1px solid color-mix(in oklch, var(--color-paper) 18%, transparent);
+  border-radius: var(--radius-lg);
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.cal-embed-frame {
+  width: 100%;
+  min-height: 42rem;
+  height: max(42rem, 70vh);
+}
+
+.cal-embed-frame iframe,
+.cal-embed-frame cal-inline,
+.cal-embed-frame cal-inline iframe {
+  width: 100% !important;
+  min-height: 42rem !important;
+  border: 0 !important;
+  background: var(--color-ink);
+}
+
+.cal-embed-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  pointer-events: none;
+  background: var(--color-ink);
+  transition: opacity var(--dur-base) var(--ease-out), visibility var(--dur-base) var(--ease-out);
+}
+
+.cal-embed-shell[data-ready="true"] .cal-embed-loading {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.cal-embed-loading-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: var(--color-paper);
+  animation: cal-embed-pulse 1.1s var(--ease-in-out) infinite;
+}
+
+.cal-embed-loading .meta {
+  margin: 0;
+  color: color-mix(in oklch, var(--color-paper) 70%, transparent);
+}
+
+@keyframes cal-embed-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 720px) {
+  .cal-embed-shell,
+  .cal-embed-frame,
+  .cal-embed-frame iframe,
+  .cal-embed-frame cal-inline,
+  .cal-embed-frame cal-inline iframe {
+    min-height: 38rem;
+  }
+
+  .cal-embed-frame {
+    height: max(38rem, 75vh);
+  }
+}
