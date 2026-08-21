@@ -2,7 +2,11 @@
 .cal-embed-shell {
   position: relative;
   width: 100%;
-  min-height: 42rem;
+  max-width: 56rem;
+  margin-inline: auto;
+  /* Modest placeholder only while the iframe is loading; after ready, height hugs content. */
+  min-height: 22rem;
+  height: auto;
   overflow: clip;
   border: 1px solid color-mix(in oklch, var(--color-paper) 18%, transparent);
   border-radius: var(--radius-lg);
@@ -10,19 +14,37 @@
   color: var(--color-paper);
 }
 
-.cal-embed-frame {
-  width: 100%;
-  min-height: 42rem;
-  height: max(42rem, 70vh);
+.cal-embed-shell[data-ready="true"] {
+  min-height: 0;
 }
 
+.cal-embed-frame {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+/*
+ * Cal auto-sizes the iframe via __dimensionChanged. Do not force a tall
+ * min-height — that created the empty black band under the booker.
+ * When ready, clip the bottom "Powered by / Cal.com Logo" strip (broken CDN
+ * assets on free plans; full removal requires a paid Cal branding option).
+ */
 .cal-embed-frame iframe,
 .cal-embed-frame cal-inline,
 .cal-embed-frame cal-inline iframe {
   width: 100% !important;
-  min-height: 42rem !important;
+  min-height: 0 !important;
+  height: auto;
+  display: block !important;
   border: 0 !important;
   background: var(--color-ink);
+}
+
+.cal-embed-shell[data-ready="true"] .cal-embed-frame iframe,
+.cal-embed-shell[data-ready="true"] .cal-embed-frame cal-inline iframe {
+  /* Branding row is typically ~40–52px; clip slightly generous to hide broken logo. */
+  margin-bottom: -3.25rem;
 }
 
 .cal-embed-loading {
@@ -69,15 +91,12 @@
 }
 
 @media (max-width: 720px) {
-  .cal-embed-shell,
-  .cal-embed-frame,
-  .cal-embed-frame iframe,
-  .cal-embed-frame cal-inline,
-  .cal-embed-frame cal-inline iframe {
-    min-height: 38rem;
+  .cal-embed-shell {
+    min-height: 28rem;
   }
 
-  .cal-embed-frame {
-    height: max(38rem, 75vh);
+  .cal-embed-shell[data-ready="true"] .cal-embed-frame iframe,
+  .cal-embed-shell[data-ready="true"] .cal-embed-frame cal-inline iframe {
+    margin-bottom: -3rem;
   }
 }

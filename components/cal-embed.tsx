@@ -114,7 +114,8 @@ export function CalEmbed() {
       cal("ui", {
         theme: "dark",
         layout: "month_view",
-        hideEventTypeDetails: false,
+        // Hides left event-details panel (broken avatar + Cal Video CDN assets).
+        hideEventTypeDetails: true,
         styles: {
           branding: { brandColor: "#ffffff" },
         },
@@ -155,7 +156,7 @@ export function CalEmbed() {
           namespace={CAL_NAMESPACE}
           calLink={CAL_LINK}
           calOrigin="https://app.cal.com"
-          style={{ width: "100%", height: "100%", overflow: "auto" }}
+          style={{ width: "100%", height: "100%", overflow: "hidden" }}
           config={{
             layout: "month_view",
             theme: "dark",
