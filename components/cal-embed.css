@@ -2,7 +2,8 @@
 .cal-embed-shell {
   position: relative;
   width: 100%;
-  max-width: 56rem;
+  /* Hug the month_view booker once event-type details are hidden (~2 columns). */
+  max-width: 44rem;
   margin-inline: auto;
   /* Modest placeholder only while the iframe is loading; after ready, height hugs content. */
   min-height: 22rem;

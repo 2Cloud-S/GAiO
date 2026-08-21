@@ -141,7 +141,8 @@ export const team: TeamMember[] = [
     avatarTone: "ink",
     email: "inbox.afnankhan@gmail.com",
     imageSrc: "/team/afnan-k.png",
-    imagePosition: "center 22%",
+    /* Near-square source; head sits at the top edge — keep crown in frame */
+    imagePosition: "center 12%",
   },
   {
     initials: "WK",
@@ -152,7 +153,8 @@ export const team: TeamMember[] = [
     avatarTone: "graphite",
     email: "waqasgfx123@gmail.com",
     imageSrc: "/team/waqas-k.png",
-    imagePosition: "center 42%",
+    /* Tall portrait — eyes ~1/3 down; works for full card + circle */
+    imagePosition: "center 18%",
   },
 ];
 

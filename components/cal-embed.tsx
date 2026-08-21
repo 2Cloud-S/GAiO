@@ -160,6 +160,9 @@ export function CalEmbed() {
           config={{
             layout: "month_view",
             theme: "dark",
+            // Also passed for Cal versions that honor it as an embed query param.
+            // Authoritative hide is cal("ui", { hideEventTypeDetails: true }) above.
+            hideEventTypeDetails: "true",
             useSlotsViewOnSmallScreen: "true",
           }}
         />

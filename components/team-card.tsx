@@ -156,9 +156,14 @@ const StyledWrapper = styled.div<{
   $tone: NonNullable<TeamCardProps["avatarTone"]>;
   $imagePosition: string;
 }>`
+  /* Prevent flex shrink in .team-grid from collapsing the card width */
+  flex-shrink: 0;
+  width: 280px;
+  max-width: 100%;
+
   .card {
-    width: 280px;
-    height: 280px;
+    width: 100%;
+    height: 360px;
     background: var(--color-paper);
     border-radius: 32px;
     padding: 3px;
@@ -178,7 +183,8 @@ const StyledWrapper = styled.div<{
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 999px;
-    background: color-mix(in oklch, var(--color-ink) 42%, transparent);
+    /* Solid ink so the circle reads the same over light and dark photos */
+    background: var(--color-ink);
     box-shadow: 0 1px 3px color-mix(in oklch, var(--color-ink) 28%, transparent);
     border: none;
     padding: 0;
@@ -198,7 +204,7 @@ const StyledWrapper = styled.div<{
 
   .card .mail:hover,
   .card .mail:focus-visible {
-    background: color-mix(in oklch, var(--color-ink) 62%, transparent);
+    background: color-mix(in oklch, var(--color-ink) 82%, var(--color-paper));
   }
 
   .card .mail:hover svg,
@@ -206,6 +212,7 @@ const StyledWrapper = styled.div<{
     stroke: var(--color-paper);
   }
 
+  /* Rest: full-bleed portrait behind a short name/role footer */
   .card .profile-pic {
     position: absolute;
     width: calc(100% - 6px);
@@ -216,6 +223,7 @@ const StyledWrapper = styled.div<{
     z-index: 1;
     border: 0px solid var(--color-ink);
     overflow: hidden;
+    box-sizing: border-box;
     /* Decorative only — must not intercept mail / contact hits */
     pointer-events: none;
     transition: all 0.5s ease-in-out 0.2s, z-index 0.5s ease-in-out 0.2s;
@@ -270,18 +278,19 @@ const StyledWrapper = styled.div<{
     opacity: 0.72;
   }
 
+  /* Short footer: name + role + Contact Me — bio takes no space */
   .card .bottom {
     position: absolute;
     bottom: 3px;
     left: 3px;
     right: 3px;
+    top: 72%;
     background: var(--color-ink);
-    top: 68%;
     border-radius: 29px;
     z-index: 2;
     box-shadow: color-mix(in oklch, var(--color-ink) 22%, transparent) 0px 5px 5px 0px inset;
     overflow: hidden;
-    /* Let mail icon (z-index 10) receive clicks when this panel expands on hover */
+    /* Let mail icon (z-index 10) receive clicks when this panel expands */
     pointer-events: none;
     transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1) 0s;
   }
@@ -289,9 +298,9 @@ const StyledWrapper = styled.div<{
   .card .bottom .content {
     position: absolute;
     top: 0.7rem;
-    bottom: 2.75rem;
-    left: 1.25rem;
-    right: 1.25rem;
+    bottom: 2.85rem;
+    left: 1.15rem;
+    right: 1.15rem;
     height: auto;
     overflow: hidden;
     z-index: 1;
@@ -322,21 +331,23 @@ const StyledWrapper = styled.div<{
     display: block;
     font-size: var(--text-sm);
     color: color-mix(in oklch, var(--color-paper) 88%, transparent);
-    margin-top: 0.75rem;
-    line-height: var(--leading-lede);
+    margin-top: 0;
+    line-height: var(--leading-snug);
+    overflow-wrap: break-word;
+    max-height: 0;
     opacity: 0;
-    transition: opacity 0.35s ease 0.05s;
-  }
-
-  .card:hover .bottom .content .about-me {
-    opacity: 1;
+    overflow: hidden;
+    transition:
+      opacity 0.35s ease 0.05s,
+      max-height 0.45s cubic-bezier(0.645, 0.045, 0.355, 1) 0.05s,
+      margin-top 0.35s ease 0.05s;
   }
 
   .card .bottom .bottom-bottom {
     position: absolute;
     bottom: 0.85rem;
-    left: 1.25rem;
-    right: 1.25rem;
+    left: 1.15rem;
+    right: 1.15rem;
     z-index: 3;
     display: flex;
     align-items: center;
@@ -400,47 +411,109 @@ const StyledWrapper = styled.div<{
     color: var(--color-paper);
   }
 
-  .card:hover {
-    border-top-left-radius: 55px;
+  /* Desktop fine pointer: expand panel + reveal bio on hover / keyboard focus */
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover,
+    .card:focus-within {
+      border-top-left-radius: 55px;
+    }
+
+    .card:hover .bottom,
+    .card:focus-within .bottom {
+      top: 16%;
+      border-radius: 80px 29px 29px 29px;
+      transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1) 0.2s;
+    }
+
+    .card:hover .bottom .content,
+    .card:focus-within .bottom .content {
+      top: 4.35rem;
+    }
+
+    .card:hover .bottom .content .about-me,
+    .card:focus-within .bottom .content .about-me {
+      opacity: 1;
+      max-height: 5.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .card:hover .profile-pic,
+    .card:focus-within .profile-pic {
+      width: 100px;
+      height: 100px;
+      aspect-ratio: 1;
+      top: 10px;
+      left: 10px;
+      border-radius: 50%;
+      z-index: 3;
+      border: 7px solid var(--color-ink);
+      box-shadow: color-mix(in oklch, var(--color-ink) 20%, transparent) 0px 5px 5px 0px;
+      transition: all 0.5s ease-in-out, z-index 0.5s ease-in-out 0.1s;
+    }
+
+    .card:hover .profile-pic:hover {
+      transform: scale(1.3);
+      border-radius: 0px;
+    }
+
+    .card:hover .profile-pic .avatar-face,
+    .card:hover .profile-pic .avatar-img,
+    .card:focus-within .profile-pic .avatar-face,
+    .card:focus-within .profile-pic .avatar-img {
+      /* Mild zoom — stronger scale clipped crowns with cover framing */
+      transform: scale(1.06);
+      transform-origin: center center;
+      transition: all 0.5s ease-in-out 0.5s;
+    }
+
+    .card:hover .profile-pic .avatar-role,
+    .card:focus-within .profile-pic .avatar-role {
+      opacity: 0;
+    }
   }
 
-  .card:hover .bottom {
-    top: 20%;
-    border-radius: 80px 29px 29px 29px;
-    transition: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1) 0.2s;
-  }
+  /* Touch / no-hover: bio readable by default (expanded chrome) */
+  @media (hover: none) {
+    .card {
+      border-top-left-radius: 55px;
+    }
 
-  /* Clear the circular avatar (100px + border) so name/role/about aren't covered */
-  .card:hover .bottom .content {
-    top: 4.65rem;
-  }
+    .card .bottom {
+      top: 16%;
+      border-radius: 80px 29px 29px 29px;
+    }
 
-  .card:hover .profile-pic {
-    width: 100px;
-    height: 100px;
-    aspect-ratio: 1;
-    top: 10px;
-    left: 10px;
-    border-radius: 50%;
-    z-index: 3;
-    border: 7px solid var(--color-ink);
-    box-shadow: color-mix(in oklch, var(--color-ink) 20%, transparent) 0px 5px 5px 0px;
-    transition: all 0.5s ease-in-out, z-index 0.5s ease-in-out 0.1s;
-  }
+    .card .bottom .content {
+      top: 4.35rem;
+    }
 
-  .card:hover .profile-pic:hover {
-    transform: scale(1.3);
-    border-radius: 0px;
-  }
+    .card .bottom .content .about-me {
+      opacity: 1;
+      max-height: 5.5rem;
+      margin-top: 0.5rem;
+    }
 
-  .card:hover .profile-pic .avatar-face,
-  .card:hover .profile-pic .avatar-img {
-    transform: scale(1.15);
-    transition: all 0.5s ease-in-out 0.5s;
-  }
+    .card .profile-pic {
+      width: 100px;
+      height: 100px;
+      aspect-ratio: 1;
+      top: 10px;
+      left: 10px;
+      border-radius: 50%;
+      z-index: 3;
+      border: 7px solid var(--color-ink);
+      box-shadow: color-mix(in oklch, var(--color-ink) 20%, transparent) 0px 5px 5px 0px;
+    }
 
-  .card:hover .profile-pic .avatar-role {
-    opacity: 0;
+    .card .profile-pic .avatar-face,
+    .card .profile-pic .avatar-img {
+      transform: scale(1.06);
+      transform-origin: center center;
+    }
+
+    .card .profile-pic .avatar-role {
+      opacity: 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -456,10 +529,6 @@ const StyledWrapper = styled.div<{
     .card .bottom .bottom-bottom .social-links-container svg,
     .card .bottom .content .about-me {
       transition: none;
-    }
-
-    .card .bottom .content .about-me {
-      opacity: 1;
     }
   }
 `;
