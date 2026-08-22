@@ -440,7 +440,13 @@ export function MethodFlow({ steps }: { steps: { index: string; title: string; d
   return (
     <div className="method-grid">
       {steps.map((step) => (
-        <MethodStageCard key={step.index} index={step.index} title={step.title} detail={step.detail} />
+        <MethodStageCard
+          key={step.index}
+          id={step.title.toLowerCase()}
+          index={step.index}
+          title={step.title}
+          detail={step.detail}
+        />
       ))}
     </div>
   );

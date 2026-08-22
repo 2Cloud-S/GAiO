@@ -22,12 +22,154 @@ export function blogHref(slug: string) {
   return `/blog/${slug}`;
 }
 
-export const navItems = [
-  { href: "/services", label: "Services" },
-  { href: "/methodology", label: "Method" },
-  { href: "/proof", label: "Proof" },
+export type MegaNavItem = {
+  href: string;
+  title: string;
+  description: string;
+  icon: "map" | "file-text" | "shield" | "radar" | "clipboard" | "search" | "layout" | "badge-check" | "check-circle" | "activity" | "globe" | "book-open" | "wrench" | "phone" | "users" | "git-branch";
+};
+
+/** Primary footer Explore links (Proof stays live at /proof but is not featured in chrome). */
+export const footerExploreLinks = [
+  { href: "/services", label: "Solutions" },
+  { href: "/methodology", label: "Engine" },
+  { href: "/pricing", label: "Pricing" },
   { href: blogListingHref, label: "Blog" },
   { href: "/about", label: "About" },
+  { href: "/changelog", label: "Changelog" },
+] as const;
+
+export const solutionsMegaItems: MegaNavItem[] = [
+  {
+    href: "/services#geo-foundation",
+    title: "GEO foundation",
+    description: "Map entities, offers, and how systems currently understand your business.",
+    icon: "map",
+  },
+  {
+    href: "/services#answer-ready-content",
+    title: "Answer-ready content",
+    description: "Restructure priority pages so claims and evidence are citation-ready.",
+    icon: "file-text",
+  },
+  {
+    href: "/services#authority-signals",
+    title: "Authority signals",
+    description: "Strengthen corroboration so key facts are easier to verify.",
+    icon: "shield",
+  },
+  {
+    href: "/services#presence-monitoring",
+    title: "Presence monitoring",
+    description: "Define prompts and evidence patterns, then review visibility over time.",
+    icon: "radar",
+  },
+  {
+    href: "/assessment",
+    title: "GEO readiness assessment",
+    description: "A focused starting point from your site priorities and proof.",
+    icon: "clipboard",
+  },
+];
+
+export const engineMegaItems: MegaNavItem[] = [
+  {
+    href: "/methodology#discovery",
+    title: "Discovery",
+    description: "Find the questions, entities, and competitor narratives in your category.",
+    icon: "search",
+  },
+  {
+    href: "/methodology#architecture",
+    title: "Architecture",
+    description: "Make core pages easier to interpret, connect, and corroborate.",
+    icon: "layout",
+  },
+  {
+    href: "/methodology#authority",
+    title: "Authority",
+    description: "Build supporting evidence around the expertise you want surfaced.",
+    icon: "badge-check",
+  },
+  {
+    href: "/methodology#validation",
+    title: "Validation",
+    description: "Test priority answers and inspect the source patterns behind them.",
+    icon: "check-circle",
+  },
+  {
+    href: "/methodology#monitoring",
+    title: "Monitoring",
+    description: "Keep a focused view of change, opportunity, and next actions.",
+    icon: "activity",
+  },
+  {
+    href: "/#engine-landscape",
+    title: "Engine landscape",
+    description: "Organise work across the answer surfaces your audience actually uses.",
+    icon: "globe",
+  },
+];
+
+export const resourcesMegaItems: MegaNavItem[] = [
+  {
+    href: blogListingHref,
+    title: "Blog",
+    description: "Insights on GEO, citation-ready content, and AI search visibility.",
+    icon: "book-open",
+  },
+  {
+    href: "/assessment",
+    title: "Free assessment",
+    description: "Run a short readiness demo to surface practical GEO starting signals.",
+    icon: "wrench",
+  },
+];
+
+export const companyMegaItems: MegaNavItem[] = [
+  {
+    href: "/book",
+    title: "Contact us",
+    description: "Book a strategy call with the GAiO Engine team.",
+    icon: "phone",
+  },
+  {
+    href: "/about",
+    title: "About",
+    description: "Agency overview and the people behind the practice.",
+    icon: "users",
+  },
+  {
+    href: "/changelog",
+    title: "Changelog",
+    description: "What shipped recently on the site and product surface.",
+    icon: "git-branch",
+  },
+];
+
+export type ChangelogEntry = {
+  date: string;
+  title: string;
+  body: string;
+};
+
+/** Honest site/product changelog starter — expand as releases land. */
+export const changelogEntries: ChangelogEntry[] = [
+  {
+    date: "2026-08-21",
+    title: "Navigation rebuilt around Solutions, Engine, and Resources",
+    body: "Primary chrome now uses mega-menus for solutions and the five-stage GEO operating system, with Company links nested under Resources. Pricing and Changelog routes added.",
+  },
+  {
+    date: "2026-08",
+    title: "Proof surfaces and AI Overview citations",
+    body: "Evidence pages and homepage proof sections highlight approved Google AI Overview citations without vanity guarantees.",
+  },
+  {
+    date: "2026-07",
+    title: "Blog, booking, and readiness assessment live",
+    body: "Editorial insights, Cal-powered strategy booking, and a three-step GEO readiness assessment demo shipped as primary conversion paths.",
+  },
 ];
 
 export const engines = [

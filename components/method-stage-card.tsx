@@ -6,11 +6,12 @@ export type MethodStageCardProps = {
   index: string;
   title: string;
   detail: string;
+  id?: string;
 };
 
-export function MethodStageCard({ index, title, detail }: MethodStageCardProps) {
+export function MethodStageCard({ index, title, detail, id }: MethodStageCardProps) {
   return (
-    <StyledWrapper>
+    <StyledWrapper id={id}>
       <article className="card" aria-label={`${index} ${title}`}>
         <div className="align" aria-hidden="true">
           <span className="red" />

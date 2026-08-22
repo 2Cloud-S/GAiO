@@ -48,12 +48,12 @@ function corePages(): LinkItem[] {
       note: "Overview of GAiO Engine's GEO practice, method stages, services, team, and FAQs.",
     },
     {
-      title: "Services",
+      title: "Solutions / Services",
       href: "/services",
       note: "GEO foundation, answer-ready content, authority signals, and presence monitoring.",
     },
     {
-      title: "Methodology",
+      title: "Engine / Methodology",
       href: "/methodology",
       note: "Five-stage operating system: Discovery, Architecture, Authority, Validation, Monitoring.",
     },
@@ -61,6 +61,11 @@ function corePages(): LinkItem[] {
       title: "Proof",
       href: "/proof",
       note: "How GAiO Engine frames evidence, source coverage, and measurement without vanity guarantees.",
+    },
+    {
+      title: "Pricing",
+      href: "/pricing",
+      note: "Pricing packaging in progress; assessment and strategy call remain the primary starting paths.",
     },
     {
       title: "Blog",
@@ -71,6 +76,11 @@ function corePages(): LinkItem[] {
       title: "About",
       href: "/about",
       note: "Agency overview and team (Afnan K., Waqas K.).",
+    },
+    {
+      title: "Changelog",
+      href: "/changelog",
+      note: "Site and product update history for GAiO Engine.",
     },
     {
       title: "GEO readiness assessment",
