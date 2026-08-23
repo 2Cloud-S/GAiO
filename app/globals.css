@@ -802,14 +802,17 @@ button { cursor: pointer; }
   text-align: center;
   text-wrap: pretty;
 }
-/* Aura++ featured backlink — soft pill so light SVG reads on dark sections */
+/* Social proof badges (Aura++, G2) — soft pill so light SVG reads on dark sections */
+.social-proof-badge,
 .aura-featured {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: fit-content;
   max-width: 100%;
+  flex-shrink: 0;
 }
+.social-proof-link,
 .aura-featured-link {
   display: inline-flex;
   align-items: center;
@@ -822,29 +825,65 @@ button { cursor: pointer; }
   box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-paper) 18%, transparent);
   transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
+.social-proof-link:hover,
 .aura-featured-link:hover { opacity: .9; }
+.social-proof-link:focus-visible,
 .aura-featured-link:focus-visible {
   outline: 2px solid var(--color-signal);
   outline-offset: 3px;
 }
+.social-proof-badge-light .social-proof-link,
 .aura-featured-light .aura-featured-link {
   background: var(--color-paper);
   box-shadow: 0 0 0 1px var(--color-rule);
 }
+.social-proof-img,
 .aura-featured-badge {
   display: block;
   width: 16.5625rem;
   max-width: min(100%, 16.5625rem);
   height: auto;
 }
+.social-proof-link.g2-badge-link {
+  padding: var(--space-3);
+  min-width: 44px;
+}
+.social-proof-img.g2-badge-img {
+  width: 3.625rem;
+  height: 3.625rem;
+  max-width: none;
+}
+.social-proof-badges {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+@media (max-width: 24.99rem) {
+  .social-proof-img.g2-badge-img {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+  .social-proof-badges {
+    gap: var(--space-2);
+  }
+}
+.social-proof-section,
 .aura-featured-section {
   padding-top: 0;
   padding-bottom: var(--space-16);
 }
+.social-proof-section .wrap,
 .aura-featured-section .wrap {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
 }
+.social-proof-inline,
 .aura-featured-inline {
   margin-top: var(--space-10);
 }

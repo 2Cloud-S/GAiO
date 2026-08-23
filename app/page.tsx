@@ -5,7 +5,7 @@ import { BlogPostCard } from "@/components/blog-post-card";
 import { TeamCard } from "@/components/team-card";
 import { Marquee } from "@/components/ui/marquee";
 import { AiOverviewProofList } from "@/components/ai-overview-proof";
-import { AuraFeaturedBadge } from "@/components/aura-featured-badge";
+import { SocialProofBadges } from "@/components/social-proof-badges";
 import { CountUp, EngineCloud, HeroGeoMap, Highlighter, KineticText, LineShadowText, MethodFlow, MorphStatement, PixelProof, Text3DFlip, TextReveal } from "@/components/visuals";
 import { blogHref, blogListingHref, faqs, methodSteps, proofs, services, team, testimonials } from "@/lib/content";
 import { getLatestInsightPosts } from "@/sanity/lib/posts";
@@ -52,9 +52,9 @@ export default async function HomePage() {
       </div>
     </section>
 
-    <section className="section section-dark aura-featured-section" aria-label="Featured on Aura++">
+    <section className="section section-dark social-proof-section" aria-label="Social proof">
       <div className="wrap">
-        <AuraFeaturedBadge />
+        <SocialProofBadges />
       </div>
     </section>
 
