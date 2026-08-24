@@ -453,20 +453,51 @@ button { cursor: pointer; }
 .button-ghost { background: transparent; color: var(--color-ink); }
 .section-dark .button-ghost { color: var(--color-paper); border-color: var(--color-paper); }
 
-.hero { position: relative; isolation: isolate; min-height: 47rem; display: grid; align-items: center; overflow: clip; background: var(--color-ink); color: var(--color-paper); padding: var(--space-32) 0 var(--space-16); content-visibility: visible; }
+.hero { position: relative; isolation: isolate; min-height: 47rem; display: grid; align-items: center; overflow-x: clip; overflow-y: visible; background: var(--color-ink); color: var(--color-paper); padding: var(--space-32) 0 var(--space-16); content-visibility: visible; }
 .hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(23rem, .92fr); align-items: center; gap: clamp(2rem, 6vw, 6rem); }
 .hero-copy { max-width: 62rem; overflow: visible; }
 .hero .eyebrow { color: var(--color-signal); }
 .hero .lede { margin-top: var(--space-5); max-width: 37rem; color: var(--color-paper-soft); }
 .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
 .hero-note { grid-column: 1 / -1; justify-self: start; margin: 0; border-left: 1px solid color-mix(in oklch, var(--color-paper) 35%, transparent); padding-left: var(--space-4); color: var(--color-paper-soft); max-width: 26rem; }
-.hero-geo-map { position: relative; width: min(100%, 31rem); aspect-ratio: 1; margin: 0; overflow: hidden; border: 1px solid color-mix(in oklch, var(--color-paper) 22%, transparent); border-radius: var(--radius-lg); background: var(--color-ink-soft); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-paper) 3%, transparent); }
-.hero-map-grid { position: absolute; inset: 0; opacity: .7; background-image: linear-gradient(color-mix(in oklch, var(--color-paper) 8%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklch, var(--color-paper) 8%, transparent) 1px, transparent 1px); background-size: 2.8rem 2.8rem; mask-image: radial-gradient(circle at center, black 20%, transparent 75%); }
-.hero-map-center { position: absolute; left: 50%; top: 50%; z-index: 10; display: grid; width: 8.5rem; height: 8.5rem; place-items: center; align-content: center; gap: .2rem; border: 1px solid color-mix(in oklch, var(--color-paper) 45%, transparent); border-radius: 50%; background: var(--color-paper); color: var(--color-ink); transform: translate(-50%, -50%); text-align: center; box-shadow: 0 0 0 .75rem color-mix(in oklch, var(--color-paper) 5%, transparent); }
-.hero-map-center span:not(.geo-core-symbol) { font: 800 1.35rem/.9 var(--font-display); letter-spacing: -.06em; }.hero-map-center small { color: var(--color-graphite); font: 700 9px/1 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; }
-.geo-core-symbol { position: relative; display: block; width: 1.45rem; height: 1.1rem; }.geo-core-symbol i { position: absolute; display: block; width: .4rem; height: .4rem; border: 1.5px solid var(--color-ink); border-radius: 50%; }.geo-core-symbol i:nth-child(1) { left: 0; top: .34rem; }.geo-core-symbol i:nth-child(2) { left: .95rem; top: 0; }.geo-core-symbol i:nth-child(3) { left: .95rem; bottom: 0; }.geo-core-symbol::before, .geo-core-symbol::after { content: ""; position: absolute; left: .36rem; width: .63rem; height: 1px; background: var(--color-ink); transform-origin: left center; }.geo-core-symbol::before { top: .47rem; transform: rotate(-27deg); }.geo-core-symbol::after { top: .63rem; transform: rotate(27deg); }
-.hero-map-node { position: absolute; z-index: 10; display: grid; width: 2.65rem; height: 2.65rem; place-items: center; border: 1px solid color-mix(in oklch, var(--color-paper) 32%, transparent); border-radius: 50%; background: color-mix(in oklch, var(--color-ink) 92%, transparent); color: var(--color-paper); transform: translate(-50%, -50%); box-shadow: 0 .35rem .9rem color-mix(in oklch, var(--color-ink) 40%, transparent); }
-.hero-geo-map figcaption { position: absolute; z-index: 10; right: var(--space-4); bottom: var(--space-4); display: inline-flex; align-items: center; gap: .4rem; margin: 0; color: var(--color-paper-soft); font: 700 10px/1.25 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
+.hero-geo-map {
+  position: relative;
+  width: min(100%, 37.5rem);
+  aspect-ratio: 1;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+  /* Soft freeform edge so the iframe square dissolves into the hero ink. */
+  -webkit-mask-image: radial-gradient(closest-side, #000 46%, rgba(0, 0, 0, 0.55) 68%, transparent 88%);
+  mask-image: radial-gradient(closest-side, #000 46%, rgba(0, 0, 0, 0.55) 68%, transparent 88%);
+}
+.hero-structure-flow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  background: transparent;
+  /* Individual transform: enlarge the scene without growing layout. */
+  scale: 1.1;
+}
+.hero-structure-flow .threeui-background {
+  background: transparent !important;
+}
+.hero-structure-flow__frame,
+.hero-structure-flow iframe {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  border: 0 !important;
+  pointer-events: none !important;
+  background: transparent !important;
+}
 .morph-line {
   position: relative;
   margin: var(--space-6) 0 0;
@@ -1506,9 +1537,9 @@ button { cursor: pointer; }
   .split-head > .lede { margin-top: var(--space-5); }
   .split-head > .button { margin-top: var(--space-6); }
   .hero-note { display: none; }
-  .hero-geo-map { width: min(100%, 28rem); margin-inline: auto; }
+  .hero-geo-map { width: min(100%, 31rem); margin-inline: auto; }
+  .hero-structure-flow { scale: 1.08; }
   .morph-line { line-height: var(--leading-tight); letter-spacing: var(--tracking-tight); }
-  .hero-map-center { width: 7rem; height: 7rem; }.hero-map-node { width: 2.25rem; height: 2.25rem; }.hero-geo-map figcaption { left: var(--space-4); right: auto; font-size: 9px; }
   .engine-panel { min-height: 29rem; padding: var(--space-5); }
   .engine-icon { width: 3.55rem; height: 3.55rem; transform: rotate(var(--angle)) translateY(-8.2rem) rotate(calc(var(--angle) * -1)); }.engine-icon b { font-size: .72rem; }.engine-core { width: 7rem; height: 7rem; font-size: 1rem; }
   .method-grid {

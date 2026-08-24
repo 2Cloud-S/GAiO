@@ -7,15 +7,14 @@ import {
   useRef,
   useState,
 } from "react";
+import dynamic from "next/dynamic";
 import {
   AnimatePresence,
   motion,
   useInView,
   useReducedMotion,
 } from "motion/react";
-import { BadgeCheck, FileText, Network, Search, Sparkles } from "lucide-react";
 import { MethodStageCard } from "@/components/method-stage-card";
-import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { Highlighter } from "@/components/ui/highlighter";
 import { IconCloud } from "@/components/ui/icon-cloud";
 import { LineShadowText as MagicLineShadowText } from "@/components/ui/line-shadow-text";
@@ -33,17 +32,13 @@ const MORPH_PHRASES = [
   "From AEO to answer inclusion.",
 ];
 
-const HERO_PROCESS_NODES = [
-  { label: "Discover", icon: Search, x: 10, y: 18, curvature: -55, reverse: false },
-  { label: "Structure", icon: FileText, x: 76, y: 13, curvature: -55, reverse: true },
-  { label: "Corroborate", icon: BadgeCheck, x: 8, y: 69, curvature: 55, reverse: false },
-  { label: "Monitor", icon: Network, x: 78, y: 71, curvature: 55, reverse: true },
-] as const;
-
-/** Signal/Proof monochrome beam colors on the dark hero card. */
-const HERO_BEAM_PATH = "rgba(225, 225, 225, 0.18)";
-const HERO_BEAM_GRADIENT_START = "#e1e1e1";
-const HERO_BEAM_GRADIENT_STOP = "#ffffff";
+const HeroStructureFlow = dynamic(
+  () =>
+    import("@/components/hero-structure-flow").then(
+      (mod) => mod.HeroStructureFlow,
+    ),
+  { ssr: false },
+);
 
 const ENGINE_LABELS = [
   "Google AI Overviews",
@@ -75,72 +70,10 @@ const ENGINE_CLOUD_IMAGES = [
 ];
 
 export function HeroGeoMap() {
-  const containerRef = useRef<HTMLElement>(null);
-  const centerRef = useRef<HTMLDivElement>(null);
-  const discoverRef = useRef<HTMLDivElement>(null);
-  const structureRef = useRef<HTMLDivElement>(null);
-  const corroborateRef = useRef<HTMLDivElement>(null);
-  const monitorRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(containerRef, { amount: 0.2, margin: "80px" });
-  const reduceMotion = useReducedMotion();
-  const beamsActive = inView && !reduceMotion;
-
-  const nodeRefs = [discoverRef, structureRef, corroborateRef, monitorRef] as const;
-
   return (
-    <figure
-      ref={containerRef}
-      className="hero-geo-map"
-      aria-labelledby="hero-geo-caption"
-    >
-      <div className="hero-map-grid" aria-hidden="true" />
-      <div
-        ref={centerRef}
-        className="hero-map-center"
-      >
-        <span className="geo-core-symbol" aria-hidden="true">
-          <i /><i /><i />
-        </span>
-        <span>GEO</span>
-        <small>answer system</small>
-      </div>
-      {HERO_PROCESS_NODES.map((node, index) => {
-        const Icon = node.icon;
-        return (
-          <div
-            ref={nodeRefs[index]}
-            className="hero-map-node"
-            key={node.label}
-            role="img"
-            aria-label={node.label}
-            style={{ left: `${node.x}%`, top: `${node.y}%` }}
-          >
-            <Icon size={17} aria-hidden="true" />
-          </div>
-        );
-      })}
-      {HERO_PROCESS_NODES.map((node, index) => (
-        <AnimatedBeam
-          key={`beam-${node.label}`}
-          containerRef={containerRef}
-          fromRef={nodeRefs[index]}
-          toRef={centerRef}
-          curvature={node.curvature}
-          reverse={node.reverse}
-          delay={index * 0.45}
-          duration={4.2}
-          pathColor={HERO_BEAM_PATH}
-          pathWidth={1.5}
-          pathOpacity={1}
-          gradientStartColor={HERO_BEAM_GRADIENT_START}
-          gradientStopColor={HERO_BEAM_GRADIENT_STOP}
-          repeat={beamsActive ? Infinity : 0}
-        />
-      ))}
-      <figcaption id="hero-geo-caption">
-        <Sparkles size={13} aria-hidden="true" /> Signals connect to an answer-ready system.
-      </figcaption>
-    </figure>
+    <div className="hero-geo-map" aria-hidden="true">
+      <HeroStructureFlow />
+    </div>
   );
 }
 
