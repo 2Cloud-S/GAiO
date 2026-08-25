@@ -21,6 +21,8 @@ button { cursor: pointer; }
 .section-muted { background: var(--color-paper-soft); }
 .section-search-shift {
   /* Mosaic tile; longhand so background-image is not wiped by shorthand */
+  position: relative;
+  isolation: isolate;
   background-color: #f7f7f6;
   background-image: url("/patterns/mosaic.svg");
   background-size: 96px 96px;
@@ -32,7 +34,55 @@ button { cursor: pointer; }
   contain: none;
   padding-bottom: calc(var(--space-24) + 2.5rem);
 }
+
+/* Golden light travels inside mosaic stroke network (mask = filled line geometry) */
+.section-search-shift::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* Traveling highlight + faint static amber so lines never go fully cold */
+  background:
+    linear-gradient(
+      125deg,
+      transparent 0%,
+      transparent 34%,
+      color-mix(in oklch, #9a7018 58%, transparent) 43%,
+      color-mix(in oklch, #f5dfa0 92%, #fff) 50%,
+      color-mix(in oklch, #9a7018 58%, transparent) 57%,
+      transparent 66%,
+      transparent 100%
+    ),
+    color-mix(in oklch, #c4a35a 22%, transparent);
+  background-size: 220% 220%, auto;
+  background-position: 0% 40%, 0 0;
+  opacity: 0.68;
+  -webkit-mask-image: url("/patterns/mosaic-lines.svg");
+  mask-image: url("/patterns/mosaic-lines.svg");
+  -webkit-mask-size: 96px 96px;
+  mask-size: 96px 96px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-position: center top;
+  mask-position: center top;
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
+  filter: drop-shadow(0 0 1.25px color-mix(in oklch, #e6c56a 45%, transparent));
+  animation: mosaic-gold-travel 18s ease-in-out infinite;
+}
+
+/* Without mask support, a full-bleed gold wash would hurt readability */
+@supports not ((mask-image: url("/patterns/mosaic-lines.svg")) or (-webkit-mask-image: url("/patterns/mosaic-lines.svg"))) {
+  .section-search-shift::before {
+    content: none;
+    display: none;
+  }
+}
+
 .section-search-shift .wrap {
+  position: relative;
+  z-index: 1;
   overflow: visible;
 }
 
@@ -40,6 +90,11 @@ button { cursor: pointer; }
 .section-search-shift [data-geo-statement] {
   -webkit-backdrop-filter: blur(7px) saturate(1.06);
   backdrop-filter: blur(7px) saturate(1.06);
+}
+
+@keyframes mosaic-gold-travel {
+  0%, 100% { background-position: 8% 35%, 0 0; }
+  50% { background-position: 92% 65%, 0 0; }
 }
 
 /* —— Type hierarchy —— */
@@ -1665,6 +1720,13 @@ button { cursor: pointer; }
     transform: none !important;
   }
   .velocity-tape span { transform: none !important; }
+  /* Keep a soft static gold on mosaic lines — no traveling highlight */
+  .section-search-shift::before {
+    animation: none !important;
+    background-position: 42% 48%, 0 0 !important;
+    opacity: 0.28;
+    filter: none;
+  }
 }
 
 @theme inline { --animate-line-shadow: line-shadow 15s linear infinite;

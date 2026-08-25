@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none">
+  <!--
+    Line network only — tiled CSS mask so gold light stays inside mosaic strokes.
+    Filled geometry (not strokes): reliable for CSS mask-image rasterization.
+    Mirrors public/patterns/mosaic.svg stroke group; ~2.2px for a soft glow corridor.
+  -->
+  <g fill="#fff">
+    <!-- Orthogonal grid -->
+    <rect x="30.9" y="0" width="2.2" height="96"/>
+    <rect x="62.9" y="0" width="2.2" height="96"/>
+    <rect x="0" y="30.9" width="96" height="2.2"/>
+    <rect x="0" y="62.9" width="96" height="2.2"/>
+    <!-- Diagonals / (bottom-left → top-right), row y 0–32 -->
+    <polygon points="0,14.9 0,17.1 14.9,0 17.1,0"/>
+    <polygon points="16,30.9 16,33.1 30.9,16 33.1,16"/>
+    <polygon points="32,30.9 32,33.1 46.9,16 49.1,16"/>
+    <polygon points="48,30.9 48,33.1 62.9,16 65.1,16"/>
+    <polygon points="64,30.9 64,33.1 78.9,16 81.1,16"/>
+    <polygon points="80,30.9 80,33.1 96,14.9 96,17.1"/>
+    <!-- Diagonals, row y 32–64 -->
+    <polygon points="0,46.9 0,49.1 14.9,32 17.1,32"/>
+    <polygon points="16,62.9 16,65.1 30.9,48 33.1,48"/>
+    <polygon points="32,62.9 32,65.1 46.9,48 49.1,48"/>
+    <polygon points="48,62.9 48,65.1 62.9,48 65.1,48"/>
+    <polygon points="64,62.9 64,65.1 78.9,48 81.1,48"/>
+    <polygon points="80,62.9 80,65.1 96,46.9 96,49.1"/>
+    <!-- Diagonals, row y 64–96 -->
+    <polygon points="0,78.9 0,81.1 14.9,64 17.1,64"/>
+    <polygon points="16,94.9 16,97.1 30.9,80 33.1,80"/>
+    <polygon points="32,94.9 32,97.1 46.9,80 49.1,80"/>
+    <polygon points="48,94.9 48,97.1 62.9,80 65.1,80"/>
+    <polygon points="64,94.9 64,97.1 78.9,80 81.1,80"/>
+    <polygon points="80,94.9 80,97.1 96,78.9 96,81.1"/>
+  </g>
+</svg>

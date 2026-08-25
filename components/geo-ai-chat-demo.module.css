@@ -35,9 +35,58 @@
   );
 }
 
+/* Golden light on mosaic lines (same filled-line mask as Search Shift section) */
+.root::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      125deg,
+      transparent 0%,
+      transparent 34%,
+      color-mix(in oklch, #9a7018 58%, transparent) 43%,
+      color-mix(in oklch, #f5dfa0 92%, #fff) 50%,
+      color-mix(in oklch, #9a7018 58%, transparent) 57%,
+      transparent 66%,
+      transparent 100%
+    ),
+    color-mix(in oklch, #c4a35a 22%, transparent);
+  background-size: 220% 220%, auto;
+  background-position: 0% 40%, 0 0;
+  opacity: 0.62;
+  -webkit-mask-image: url("/patterns/mosaic-lines.svg");
+  mask-image: url("/patterns/mosaic-lines.svg");
+  -webkit-mask-size: 96px 96px;
+  mask-size: 96px 96px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
+  filter: drop-shadow(0 0 1.25px color-mix(in oklch, #e6c56a 40%, transparent));
+  animation: mosaic-gold-travel 18s ease-in-out infinite;
+}
+
+@supports not ((mask-image: url("/patterns/mosaic-lines.svg")) or (-webkit-mask-image: url("/patterns/mosaic-lines.svg"))) {
+  .root::after {
+    content: none;
+    display: none;
+  }
+}
+
 .root > * {
   position: relative;
   z-index: 1;
+}
+
+@keyframes mosaic-gold-travel {
+  0%, 100% { background-position: 8% 35%, 0 0; }
+  50% { background-position: 92% 65%, 0 0; }
 }
 
 .statement {
@@ -969,6 +1018,13 @@
 
   .cursor {
     display: none;
+  }
+
+  .root::after {
+    animation: none;
+    background-position: 42% 48%, 0 0;
+    opacity: 0.28;
+    filter: none;
   }
 
   .statement {
