@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none">
+  <rect width="96" height="96" fill="#f3f4f3"/>
+  <path d="M0 0h32v32H0z" fill="#ebeceb"/>
+  <path d="M32 0h32v32H32z" fill="#f6f6f5"/>
+  <path d="M64 0h32v32H64z" fill="#e6e8e6"/>
+  <path d="M0 32h32v32H0z" fill="#f0f1f0"/>
+  <path d="M32 32h32v32H32z" fill="#dde3e1"/>
+  <path d="M64 32h32v32H64z" fill="#eceeed"/>
+  <path d="M0 64h32v32H0z" fill="#e4e7e5"/>
+  <path d="M32 64h32v32H32z" fill="#f4f5f4"/>
+  <path d="M64 64h32v32H64z" fill="#e9ecea"/>
+  <path d="M16 0L32 16L16 32L0 16Z" fill="#d5dcd9" opacity=".7"/>
+  <path d="M48 0L64 16L48 32L32 16Z" fill="#c8d5d1" opacity=".55"/>
+  <path d="M80 0L96 16L80 32L64 16Z" fill="#d8dedb" opacity=".65"/>
+  <path d="M16 32L32 48L16 64L0 48Z" fill="#c5d2ce" opacity=".5"/>
+  <path d="M48 32L64 48L48 64L32 48Z" fill="#1a6b7a" opacity=".08"/>
+  <path d="M80 32L96 48L80 64L64 48Z" fill="#d0d8d5" opacity=".58"/>
+  <path d="M16 64L32 80L16 96L0 80Z" fill="#d6dcda" opacity=".62"/>
+  <path d="M48 64L64 80L48 96L32 80Z" fill="#cad6d2" opacity=".48"/>
+  <path d="M80 64L96 80L80 96L64 80Z" fill="#1a6b7a" opacity=".06"/>
+  <g stroke="#aeb8b4" stroke-opacity=".45" stroke-width=".75" fill="none">
+    <path d="M32 0v96M64 0v96M0 32h96M0 64h96"/>
+    <path d="M0 16L16 0M16 32L32 16M32 32L48 16M48 32L64 16M64 32L80 16M80 32L96 16"/>
+    <path d="M0 48L16 32M16 64L32 48M32 64L48 48M48 64L64 48M64 64L80 48M80 64L96 48"/>
+    <path d="M0 80L16 64M16 96L32 80M32 96L48 80M48 96L64 80M64 96L80 80M80 96L96 80"/>
+  </g>
+</svg>

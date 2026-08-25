@@ -6,7 +6,8 @@ import { TeamCard } from "@/components/team-card";
 import { Marquee } from "@/components/ui/marquee";
 import { AiOverviewProofList } from "@/components/ai-overview-proof";
 import { SocialProofBadges } from "@/components/social-proof-badges";
-import { CountUp, EngineCloud, HeroGeoMap, Highlighter, KineticText, LineShadowText, MethodFlow, MorphStatement, PixelProof, Text3DFlip, TextReveal } from "@/components/visuals";
+import { GeoAiChatDemo, GeoShiftStatement } from "@/components/geo-ai-chat-demo";
+import { CountUp, EngineCloud, HeroGeoMap, Highlighter, KineticText, LineShadowText, MethodFlow, MorphStatement, PixelProof } from "@/components/visuals";
 import { blogHref, blogListingHref, faqs, methodSteps, proofs, services, team, testimonials } from "@/lib/content";
 import { getLatestInsightPosts } from "@/sanity/lib/posts";
 
@@ -19,7 +20,7 @@ export default async function HomePage() {
   return <LayoutFrame>
     <section className="hero"><div className="wrap hero-grid"><div className="hero-copy"><p className="eyebrow">Generative Engine Optimization</p><h1 className="display headline"><span className="headline-line">Be the <LineShadowText>answer</LineShadowText></span><span className="headline-line">AI finds.</span></h1><p className="lede">We help your business become clearer, more credible, and more discoverable across generative search and Google’s AI-powered results.</p><MorphStatement /><div className="hero-actions"><Link className="button button-signal" href="/book">Book a strategy call <ArrowRight size={16} /></Link><Link className="button button-ghost" href="/assessment">Run a GEO assessment</Link></div></div><HeroGeoMap /><p className="hero-note"><span className="meta signal">Signal / Proof</span><br />Technical precision, evidence-led content, and a measurement model that does not rely on promises.</p></div></section>
 
-    <section className="section"><div className="wrap"><div className="split-head"><div><p className="eyebrow">The search shift</p><h2 className="display section-title"><Text3DFlip /></h2></div><p className="lede">The new surface is a generated answer. Your job is not simply to appear—it is to give systems enough clarity and evidence to understand when your expertise belongs in the answer.</p></div><TextReveal>GEO helps translate your knowledge into a system that is direct, corroborated, structurally clear, and ready to be evaluated.</TextReveal></div></section>
+    <section className="section section-search-shift"><div className="wrap"><GeoShiftStatement /><GeoAiChatDemo /></div></section>
 
     <section id="engine-landscape" className="section section-dark"><div className="wrap"><div className="split-head"><div><p className="eyebrow">Engine landscape</p><h2 className="display section-title">One category. Many answer surfaces.</h2></div><p className="lede">We organise the work around the systems your audience actually uses, while keeping the message and evidence consistent across every surface.</p></div><EngineCloud /></div></section>
 

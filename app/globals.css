@@ -19,6 +19,28 @@ button { cursor: pointer; }
 .section { padding: var(--space-24) 0; content-visibility: auto; contain-intrinsic-size: auto 36rem; }
 .section-dark { background: var(--color-ink); color: var(--color-paper); }
 .section-muted { background: var(--color-paper-soft); }
+.section-search-shift {
+  /* Mosaic tile; longhand so background-image is not wiped by shorthand */
+  background-color: #f7f7f6;
+  background-image: url("/patterns/mosaic.svg");
+  background-size: 96px 96px;
+  background-repeat: repeat;
+  background-position: center top;
+  overflow: visible;
+  /* Override .section content-visibility so chat window shadow can paint fully */
+  content-visibility: visible;
+  contain: none;
+  padding-bottom: calc(var(--space-24) + 2.5rem);
+}
+.section-search-shift .wrap {
+  overflow: visible;
+}
+
+/* Glass frost for GeoShiftStatement — keep in globals; CSS modules can drop backdrop-filter */
+.section-search-shift [data-geo-statement] {
+  -webkit-backdrop-filter: blur(7px) saturate(1.06);
+  backdrop-filter: blur(7px) saturate(1.06);
+}
 
 /* —— Type hierarchy —— */
 .eyebrow { margin: 0 0 var(--space-4); font: 700 var(--text-xs)/var(--leading-snug) var(--font-mono); letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; color: var(--color-muted); }
