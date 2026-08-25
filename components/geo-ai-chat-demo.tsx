@@ -290,16 +290,91 @@ function cursorPointInShell(shell: HTMLElement, el: HTMLElement) {
   };
 }
 
+function isAbortError(err: unknown) {
+  return err instanceof DOMException
+    ? err.name === "AbortError"
+    : err instanceof Error && err.name === "AbortError";
+}
+
+/** Double-rAF after paint; cancelled flag closes the classic cancelAnimationFrame race. */
 function afterLayout(cb: () => void) {
   let outer = 0;
   let inner = 0;
+  let cancelled = false;
   outer = window.requestAnimationFrame(() => {
-    inner = window.requestAnimationFrame(cb);
+    if (cancelled) return;
+    inner = window.requestAnimationFrame(() => {
+      if (cancelled) return;
+      cb();
+    });
   });
   return () => {
+    cancelled = true;
     window.cancelAnimationFrame(outer);
     window.cancelAnimationFrame(inner);
   };
+}
+
+function sleep(ms: number, signal?: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const id = window.setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      window.clearTimeout(id);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+/** Resolves after two animation frames, or when `timeoutMs` elapses — whichever first. */
+function waitForLayout(signal: AbortSignal, timeoutMs = 600) {
+  return new Promise<void>((resolve, reject) => {
+    if (signal.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      cancel();
+      signal.removeEventListener("abort", onAbort);
+      window.clearTimeout(timer);
+      resolve();
+    };
+    const onAbort = () => {
+      if (settled) return;
+      settled = true;
+      cancel();
+      window.clearTimeout(timer);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    const cancel = afterLayout(finish);
+    const timer = window.setTimeout(finish, timeoutMs);
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+async function waitForElement(
+  getEl: () => HTMLElement | null | undefined,
+  signal: AbortSignal,
+  timeoutMs = 1200,
+) {
+  const start = performance.now();
+  while (!signal.aborted) {
+    const el = getEl();
+    if (el && el.getClientRects().length > 0) return el;
+    if (performance.now() - start >= timeoutMs) return getEl() ?? null;
+    await sleep(32, signal);
+  }
+  throw new DOMException("Aborted", "AbortError");
 }
 
 export function GeoAiChatDemo() {
@@ -319,10 +394,11 @@ export function GeoAiChatDemo() {
   const timelineRef = useRef<AnimHandle | null>(null);
   const cursorAnimRef = useRef<AnimHandle | null>(null);
   const cursorTargetRef = useRef<HTMLElement | null>(null);
-  const layoutWaitRef = useRef<(() => void) | null>(null);
-  const phaseTimer = useRef<number | null>(null);
-  const typeTimer = useRef<number | null>(null);
   const clickTimer = useRef<number | null>(null);
+  const runAbortRef = useRef<AbortController | null>(null);
+  const pausedRef = useRef(false);
+  const inViewRef = useRef(false);
+  const manualModeRef = useRef(false);
 
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("to-pill");
@@ -353,16 +429,20 @@ export function GeoAiChatDemo() {
         ? scene.prompt
         : "";
 
+  pausedRef.current = paused;
+  inViewRef.current = inView;
+  manualModeRef.current = manualMode;
+
   const clearTimers = useCallback(() => {
-    if (phaseTimer.current != null) window.clearTimeout(phaseTimer.current);
-    if (typeTimer.current != null) window.clearInterval(typeTimer.current);
     if (clickTimer.current != null) window.clearTimeout(clickTimer.current);
-    layoutWaitRef.current?.();
-    layoutWaitRef.current = null;
-    phaseTimer.current = null;
-    typeTimer.current = null;
     clickTimer.current = null;
   }, []);
+
+  const abortRun = useCallback(() => {
+    runAbortRef.current?.abort();
+    runAbortRef.current = null;
+    clearTimers();
+  }, [clearTimers]);
 
   const stopCursorAnim = useCallback(() => {
     cursorAnimRef.current?.pause();
@@ -378,17 +458,24 @@ export function GeoAiChatDemo() {
 
       cursorTargetRef.current = el;
       const { x, y } = cursorPointInShell(shell, el);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
 
       setCursorVisible(true);
       stopCursorAnim();
 
-      const anim = animate(cursor, {
-        left: `${x}px`,
-        top: `${y}px`,
-        duration,
-        ease: CURSOR_EASE,
-      });
-      cursorAnimRef.current = anim as AnimHandle;
+      try {
+        const anim = animate(cursor, {
+          left: `${x}px`,
+          top: `${y}px`,
+          duration,
+          ease: CURSOR_EASE,
+        });
+        cursorAnimRef.current = anim as AnimHandle;
+      } catch {
+        cursor.style.left = `${x}px`;
+        cursor.style.top = `${y}px`;
+        cursorAnimRef.current = null;
+      }
     },
     [stopCursorAnim],
   );
@@ -396,16 +483,45 @@ export function GeoAiChatDemo() {
   const remountCursorToTarget = useCallback(
     (duration = 280) => {
       const target = cursorTargetRef.current;
-      if (!target || !cursorVisible || paused || manualMode) return;
+      if (!target || !cursorVisible || pausedRef.current || manualModeRef.current) return;
       moveCursorTo(target, duration);
     },
-    [cursorVisible, manualMode, moveCursorTo, paused],
+    [cursorVisible, moveCursorTo],
   );
 
   const pulseClick = useCallback(() => {
     setCursorClick(true);
     if (clickTimer.current != null) window.clearTimeout(clickTimer.current);
     clickTimer.current = window.setTimeout(() => setCursorClick(false), 160);
+  }, []);
+
+  /** Pause-aware delay: hover/offscreen freezes the clock; resume continues the same step. */
+  const delay = useCallback(async (ms: number, signal: AbortSignal) => {
+    let remaining = ms;
+    while (remaining > 0) {
+      if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+      while (
+        pausedRef.current ||
+        !inViewRef.current ||
+        manualModeRef.current
+      ) {
+        if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+        cursorAnimRef.current?.pause();
+        await sleep(48, signal);
+      }
+      cursorAnimRef.current?.play?.();
+      const slice = Math.min(64, remaining);
+      const started = performance.now();
+      await sleep(slice, signal);
+      if (
+        pausedRef.current ||
+        !inViewRef.current ||
+        manualModeRef.current
+      ) {
+        continue;
+      }
+      remaining -= performance.now() - started;
+    }
   }, []);
 
   const pushHistory = useCallback((s: Scene) => {
@@ -428,22 +544,24 @@ export function GeoAiChatDemo() {
 
   const goToScene = useCallback(
     (next: number, opts?: { manual?: boolean }) => {
-      clearTimers();
+      abortRun();
       const i = (next + SCENES.length) % SCENES.length;
       setIndex(i);
       setPickerOpen(false);
       setDraft("");
       if (opts?.manual) {
+        manualModeRef.current = true;
         setManualMode(true);
         setCursorVisible(false);
         setPhase("answer");
         pushHistory(SCENES[i]!);
       } else {
+        manualModeRef.current = false;
         setManualMode(false);
         setPhase(cursorDemo ? "to-pill" : "thinking");
       }
     },
-    [clearTimers, cursorDemo, pushHistory],
+    [abortRun, cursorDemo, pushHistory],
   );
 
   useEffect(() => {
@@ -473,7 +591,11 @@ export function GeoAiChatDemo() {
     const node = rootRef.current;
     if (!node) return;
     const observer = new IntersectionObserver(
-      ([entry]) => setInView(Boolean(entry?.isIntersecting)),
+      ([entry]) => {
+        const visible = Boolean(entry?.isIntersecting);
+        inViewRef.current = visible;
+        setInView(visible);
+      },
       { threshold: 0.08, rootMargin: "100px" },
     );
     observer.observe(node);
@@ -495,138 +617,190 @@ export function GeoAiChatDemo() {
     remountCursorToTarget,
   ]);
 
-  // Cursor + phase orchestration
+  // Resume anime.js cursor when hover/focus pause ends
   useEffect(() => {
-    clearTimers();
-
-    if (paused) {
+    if (paused || manualMode || !inView) {
       cursorAnimRef.current?.pause();
-      return clearTimers;
+      return;
     }
+    cursorAnimRef.current?.play?.();
+  }, [paused, manualMode, inView]);
 
-    if (!inView || manualMode) return clearTimers;
+  // Cursor + phase orchestration (abortable, pause-aware — never hangs on layout waits)
+  useEffect(() => {
+    abortRun();
 
-    // Simplified path: no cursor (touch / reduced motion)
-    if (!cursorDemo) {
-      setPickerOpen(false);
-      setCursorVisible(false);
-      if (
-        phase === "to-pill" ||
-        phase === "open-picker" ||
-        phase === "to-option" ||
-        phase === "select" ||
-        phase === "to-input" ||
-        phase === "typing" ||
-        phase === "to-send" ||
-        phase === "send"
-      ) {
-        setDraft(scene.prompt);
-        setPhase("thinking");
-        return clearTimers;
+    if (manualMode) return;
+
+    const ac = new AbortController();
+    runAbortRef.current = ac;
+    const { signal } = ac;
+
+    const run = async () => {
+      try {
+        // Wait until the demo is allowed to run (in view, not hovered)
+        while (pausedRef.current || !inViewRef.current) {
+          if (signal.aborted) return;
+          cursorAnimRef.current?.pause();
+          await sleep(48, signal);
+        }
+        cursorAnimRef.current?.play?.();
+
+        if (!cursorDemo) {
+          setPickerOpen(false);
+          setCursorVisible(false);
+          if (
+            phase === "to-pill" ||
+            phase === "open-picker" ||
+            phase === "to-option" ||
+            phase === "select" ||
+            phase === "to-input" ||
+            phase === "typing" ||
+            phase === "to-send" ||
+            phase === "send"
+          ) {
+            setDraft(scene.prompt);
+            setPhase("thinking");
+            return;
+          }
+          if (phase === "thinking") {
+            await delay(PHASE_MS.thinking, signal);
+            pushHistory(scene);
+            setPhase("answer");
+          } else if (phase === "answer") {
+            await delay(PHASE_MS.answer, signal);
+            setPhase("hold");
+          } else if (phase === "hold") {
+            await delay(PHASE_MS.hold, signal);
+            setIndex((c) => (c + 1) % SCENES.length);
+            setPhase("thinking");
+            setDraft("");
+          }
+          return;
+        }
+
+        switch (phase) {
+          case "to-pill": {
+            setPickerOpen(false);
+            setDraft("");
+            moveCursorTo(pillRef.current, 640);
+            await delay(PHASE_MS["to-pill"], signal);
+            setPhase("open-picker");
+            break;
+          }
+          case "open-picker": {
+            pulseClick();
+            setPickerOpen(true);
+            await delay(PHASE_MS["open-picker"], signal);
+            setPhase("to-option");
+            break;
+          }
+          case "to-option": {
+            await waitForLayout(signal, 700);
+            const item = await waitForElement(
+              () =>
+                menuRef.current?.querySelector<HTMLElement>(
+                  `[data-model-id="${scene.id}"]`,
+                ),
+              signal,
+              1200,
+            );
+            if (item) {
+              void item.offsetWidth;
+              moveCursorTo(item, 580);
+            }
+            await delay(PHASE_MS["to-option"], signal);
+            setPhase("select");
+            break;
+          }
+          case "select": {
+            pulseClick();
+            setPickerOpen(false);
+            await delay(PHASE_MS.select, signal);
+            setPhase("to-input");
+            break;
+          }
+          case "to-input": {
+            moveCursorTo(inputAreaRef.current, 560);
+            await delay(PHASE_MS["to-input"], signal);
+            setPhase("typing");
+            break;
+          }
+          case "typing": {
+            setDraft("");
+            const full = scene.prompt;
+            for (let i = 1; i <= full.length; i += 1) {
+              if (signal.aborted) return;
+              await delay(TYPE_MS_PER_CHAR, signal);
+              setDraft(full.slice(0, i));
+            }
+            setPhase("to-send");
+            break;
+          }
+          case "to-send": {
+            moveCursorTo(sendRef.current, 480);
+            await delay(PHASE_MS["to-send"], signal);
+            setPhase("send");
+            break;
+          }
+          case "send": {
+            pulseClick();
+            await delay(PHASE_MS.send, signal);
+            setPhase("thinking");
+            break;
+          }
+          case "thinking": {
+            await delay(PHASE_MS.thinking, signal);
+            setPhase("answer");
+            break;
+          }
+          case "answer": {
+            pushHistory(scene);
+            await delay(PHASE_MS.answer, signal);
+            setPhase("hold");
+            break;
+          }
+          case "hold": {
+            await delay(PHASE_MS.hold, signal);
+            setIndex((c) => (c + 1) % SCENES.length);
+            setPhase("to-pill");
+            setDraft("");
+            break;
+          }
+        }
+      } catch (err) {
+        if (!isAbortError(err)) {
+          // Soft-recover: advance so a single failure can't freeze the loop
+          window.setTimeout(() => {
+            if (manualModeRef.current || runAbortRef.current !== ac) return;
+            setPhase((p) => {
+              if (p === "hold") return "to-pill";
+              if (p === "answer") return "hold";
+              if (p === "thinking" || p === "send") return "answer";
+              if (p === "typing" || p === "to-send") return "to-send";
+              return "to-pill";
+            });
+          }, 400);
+        }
       }
-      if (phase === "thinking") {
-        phaseTimer.current = window.setTimeout(() => {
-          pushHistory(scene);
-          setPhase("answer");
-        }, PHASE_MS.thinking);
-      } else if (phase === "answer") {
-        phaseTimer.current = window.setTimeout(() => setPhase("hold"), PHASE_MS.answer);
-      } else if (phase === "hold") {
-        phaseTimer.current = window.setTimeout(() => {
-          setIndex((c) => (c + 1) % SCENES.length);
-          setPhase("thinking");
-          setDraft("");
-        }, PHASE_MS.hold);
-      }
-      return clearTimers;
-    }
-
-    const later = (next: Phase, delay: number) => {
-      phaseTimer.current = window.setTimeout(() => setPhase(next), delay);
     };
 
-    switch (phase) {
-      case "to-pill":
-        setPickerOpen(false);
-        setDraft("");
-        moveCursorTo(pillRef.current, 640);
-        later("open-picker", PHASE_MS["to-pill"]);
-        break;
-      case "open-picker":
-        pulseClick();
-        setPickerOpen(true);
-        later("to-option", PHASE_MS["open-picker"]);
-        break;
-      case "to-option": {
-        // Wait for menu layout/paint before targeting an item
-        layoutWaitRef.current = afterLayout(() => {
-          const item = menuRef.current?.querySelector<HTMLElement>(
-            `[data-model-id="${scene.id}"]`,
-          );
-          if (item) {
-            void item.offsetWidth;
-            moveCursorTo(item, 580);
-          }
-          later("select", PHASE_MS["to-option"]);
-        });
-        break;
-      }
-      case "select":
-        pulseClick();
-        setPickerOpen(false);
-        later("to-input", PHASE_MS.select);
-        break;
-      case "to-input":
-        moveCursorTo(inputAreaRef.current, 560);
-        later("typing", PHASE_MS["to-input"]);
-        break;
-      case "typing": {
-        setDraft("");
-        let i = 0;
-        const full = scene.prompt;
-        typeTimer.current = window.setInterval(() => {
-          i += 1;
-          setDraft(full.slice(0, i));
-          if (i >= full.length) {
-            if (typeTimer.current != null) window.clearInterval(typeTimer.current);
-            typeTimer.current = null;
-            setPhase("to-send");
-          }
-        }, TYPE_MS_PER_CHAR);
-        break;
-      }
-      case "to-send":
-        moveCursorTo(sendRef.current, 480);
-        later("send", PHASE_MS["to-send"]);
-        break;
-      case "send":
-        pulseClick();
-        later("thinking", PHASE_MS.send);
-        break;
-      case "thinking":
-        later("answer", PHASE_MS.thinking);
-        break;
-      case "answer":
-        pushHistory(scene);
-        later("hold", PHASE_MS.answer);
-        break;
-      case "hold":
-        phaseTimer.current = window.setTimeout(() => {
-          setIndex((c) => (c + 1) % SCENES.length);
-          setPhase("to-pill");
-          setDraft("");
-        }, PHASE_MS.hold);
-        break;
-    }
+    void run();
 
-    return clearTimers;
+    return () => {
+      if (runAbortRef.current === ac) runAbortRef.current = null;
+      ac.abort();
+      clearTimers();
+    };
   }, [
+    abortRun,
     clearTimers,
     cursorDemo,
-    inView,
+    delay,
+    // inView/paused intentionally omitted: delay() polls refs so pause/resume
+    // does not abort mid-step (which previously dropped later() forever).
     manualMode,
     moveCursorTo,
-    paused,
     phase,
     pulseClick,
     pushHistory,
@@ -715,18 +889,31 @@ export function GeoAiChatDemo() {
       style={{ "--gac-accent": scene.accent } as CSSProperties}
       aria-labelledby={labelId}
       tabIndex={0}
-      onMouseEnter={() => setPaused(true)}
+      onMouseEnter={() => {
+        pausedRef.current = true;
+        cursorAnimRef.current?.pause();
+        setPaused(true);
+      }}
       onMouseLeave={() => {
+        pausedRef.current = false;
         setPaused(false);
+        cursorAnimRef.current?.play?.();
         if (manualMode) {
+          manualModeRef.current = false;
           setManualMode(false);
           setPhase(cursorDemo ? "to-pill" : "thinking");
         }
       }}
-      onFocus={() => setPaused(true)}
+      onFocus={() => {
+        pausedRef.current = true;
+        cursorAnimRef.current?.pause();
+        setPaused(true);
+      }}
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          pausedRef.current = false;
           setPaused(false);
+          cursorAnimRef.current?.play?.();
         }
       }}
     >
@@ -891,6 +1078,8 @@ export function GeoAiChatDemo() {
                       aria-expanded={pickerOpen}
                       aria-controls={listId}
                       onClick={() => {
+                        manualModeRef.current = true;
+                        pausedRef.current = true;
                         setManualMode(true);
                         setPaused(true);
                         setPickerOpen((o) => !o);
@@ -941,6 +1130,8 @@ export function GeoAiChatDemo() {
                     className={styles.sendBtn}
                     aria-label="Send"
                     onClick={() => {
+                      manualModeRef.current = true;
+                      pausedRef.current = true;
                       setManualMode(true);
                       setPaused(true);
                       setPickerOpen(false);

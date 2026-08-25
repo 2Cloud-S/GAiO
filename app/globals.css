@@ -481,7 +481,6 @@ button { cursor: pointer; }
 .hero .eyebrow { color: var(--color-signal); }
 .hero .lede { margin-top: var(--space-5); max-width: 37rem; color: var(--color-paper-soft); }
 .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
-.hero-note { grid-column: 1 / -1; justify-self: start; margin: 0; border-left: 1px solid color-mix(in oklch, var(--color-paper) 35%, transparent); padding-left: var(--space-4); color: var(--color-paper-soft); max-width: 26rem; }
 .hero-geo-map {
   position: relative;
   width: min(100%, 37.5rem);
@@ -1558,7 +1557,6 @@ button { cursor: pointer; }
   .split-head > .button { margin-top: 0; }
   .split-head > .lede { margin-top: var(--space-5); }
   .split-head > .button { margin-top: var(--space-6); }
-  .hero-note { display: none; }
   .hero-geo-map { width: min(100%, 31rem); margin-inline: auto; }
   .hero-structure-flow { scale: 1.08; }
   .morph-line { line-height: var(--leading-tight); letter-spacing: var(--tracking-tight); }
