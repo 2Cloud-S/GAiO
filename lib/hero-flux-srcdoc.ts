@@ -1,83 +1,14 @@
-import { preload, preloadModule } from "react-dom";
-import fluxVortexHtml from "@/lib/vendor/flux-vortex.html.js";
+/**
+ * Build a Flux Vortex iframe srcDoc tuned for earliest visible Three.js.
+ *
+ * Upstream ThreeUI HTML blocks on Tailwind / Iconify / GSAP / fonts, then only
+ * starts the render loop in `window.onload` behind a 1s loader fade. Those
+ * chrome layers are discarded by ThreeUI isolation anyway — strip them and
+ * start `animate()` as soon as the module runs.
+ */
+import fluxVortexHtml from "@designcodeio/threeui/lib-dist/shaders/neuform-isolated/sources/flux-vortex.html.js";
 
 const THREE_CDN = "https://unpkg.com/three@0.160.0";
-
-export const HERO_FLUX_THREE_URLS = {
-  module: `${THREE_CDN}/build/three.module.js`,
-  effectComposer: `${THREE_CDN}/examples/jsm/postprocessing/EffectComposer.js`,
-  renderPass: `${THREE_CDN}/examples/jsm/postprocessing/RenderPass.js`,
-  unrealBloom: `${THREE_CDN}/examples/jsm/postprocessing/UnrealBloomPass.js`,
-} as const;
-
-/** CDN URLs the Flux Vortex iframe needs — warm the shared HTTP cache early. */
-export const FLUX_PRELOADS: ReadonlyArray<{
-  rel: "modulepreload" | "preload";
-  href: string;
-  as?: "script";
-  fetchPriority?: "high" | "low" | "auto";
-}> = [
-  {
-    rel: "modulepreload",
-    href: HERO_FLUX_THREE_URLS.module,
-    fetchPriority: "high",
-  },
-  {
-    rel: "modulepreload",
-    href: HERO_FLUX_THREE_URLS.effectComposer,
-  },
-  {
-    rel: "modulepreload",
-    href: HERO_FLUX_THREE_URLS.renderPass,
-  },
-  {
-    rel: "modulepreload",
-    href: HERO_FLUX_THREE_URLS.unrealBloom,
-  },
-];
-
-/**
- * Server-safe: emit React preload hints into the document head for the
- * current request (homepage). Starts CDN fetch before client JS runs.
- */
-export function warmFluxPreloads() {
-  for (const item of FLUX_PRELOADS) {
-    if (item.rel === "modulepreload") {
-      preloadModule(item.href, {
-        as: "script",
-        crossOrigin: "anonymous",
-      });
-    } else {
-      preload(item.href, {
-        as: item.as ?? "script",
-        crossOrigin: "anonymous",
-      });
-    }
-  }
-}
-
-/** Inject once on the client; safe to call from multiple hero entry points. */
-export function ensureFluxPreloads() {
-  if (typeof document === "undefined") return;
-
-  for (const item of FLUX_PRELOADS) {
-    const already = Array.from(
-      document.head.querySelectorAll("link[data-hero-flux-preload]"),
-    ).some((link) => link.getAttribute("href") === item.href);
-    if (already) continue;
-
-    const link = document.createElement("link");
-    link.rel = item.rel;
-    link.href = item.href;
-    link.dataset.heroFluxPreload = "true";
-    link.crossOrigin = "anonymous";
-    if (item.as) link.as = item.as;
-    if (item.fetchPriority) {
-      link.fetchPriority = item.fetchPriority;
-    }
-    document.head.appendChild(link);
-  }
-}
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -91,6 +22,8 @@ export type HeroFluxSrcDocOptions = {
   density?: number;
   size?: number;
   speed?: number;
+  /** Prefer same-origin copies under /vendor when present. */
+  localThreeBase?: string;
 };
 
 const BOOT_PATCH = `
@@ -114,6 +47,7 @@ const BOOT_PATCH = `
     if (window.__SF_APPLY_CONTROLS) window.__SF_APPLY_CONTROLS();
     requestAnimationFrame(function () { window.dispatchEvent(new Event('resize')); });
   }
+  // Isolate as soon as the canvas exists — do not wait for load / CDN leftovers.
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', isolate, { once: true });
   } else {
@@ -169,21 +103,20 @@ body[data-threeui-ready] > [data-threeui-role] { visibility: visible !important;
 }
 </style>`;
 
-/**
- * Patched Flux Vortex srcDoc: strip Tailwind/Iconify/GSAP/fonts/loader and
- * start the Three.js loop as soon as the module evaluates (no window.onload).
- */
 export function buildHeroFluxSrcDoc({
   density = 1,
   size = 1,
   speed = 1,
+  localThreeBase,
 }: HeroFluxSrcDocOptions = {}): string {
   const d = clamp(density, 0.25, 2.5);
   const s = clamp(size, 0.05, 200);
   const sp = clamp(speed, 0, 3);
+  const threeBase = localThreeBase?.replace(/\/$/, "") || THREE_CDN;
 
   let html = String(fluxVortexHtml);
 
+  // Density / point size (same formula as ThreeUI FluxVortex patch).
   html = html
     .replace(
       "const vortexCount = 9500;",
@@ -199,6 +132,7 @@ export function buildHeroFluxSrcDoc({
     )
     .replace("size: 0.008,", `size: ${Number((8e-3 * s).toFixed(4))},`);
 
+  // Drop blocking / unused chrome CDNs — they only delay window load.
   html = html
     .replace(
       /\s*<!-- Tailwind & Iconify -->[\s\S]*?<!-- Fonts -->[\s\S]*?<link[^>]*>\s*/i,
@@ -213,6 +147,17 @@ export function buildHeroFluxSrcDoc({
       "<!-- 3D Canvas Container -->",
     );
 
+  // Point import map at preferred Three base (CDN or local vendor).
+  html = html.replace(
+    /"three": "https:\/\/unpkg\.com\/three@0\.160\.0\/build\/three\.module\.js"/,
+    `"three": "${threeBase}/build/three.module.js"`,
+  );
+  html = html.replace(
+    /"three\/addons\/": "https:\/\/unpkg\.com\/three@0\.160\.0\/examples\/jsm\/"/,
+    `"three/addons/": "${threeBase}/examples/jsm/"`,
+  );
+
+  // GSAP is gone — remove register + onload gate; start rendering immediately.
   html = html.replace(
     /\s*\/\/ Register GSAP ScrollTrigger\s*gsap\.registerPlugin\(ScrollTrigger\);\s*/i,
     "\n",
@@ -224,11 +169,16 @@ export function buildHeroFluxSrcDoc({
 `,
   );
 
-  html = html.replace(
-    /<head([^>]*)>/i,
-    `<head$1>${FOCUS_STYLE}${CONTROLS_SCRIPT(sp)}`,
-  );
+  // Inject focus CSS + controls + early isolate into head / before </body>.
+  html = html.replace(/<head([^>]*)>/i, `<head$1>${FOCUS_STYLE}${CONTROLS_SCRIPT(sp)}`);
   html = html.replace(/<\/body>/i, `${BOOT_PATCH}</body>`);
 
   return html;
 }
+
+export const HERO_FLUX_THREE_URLS = {
+  module: `${THREE_CDN}/build/three.module.js`,
+  effectComposer: `${THREE_CDN}/examples/jsm/postprocessing/EffectComposer.js`,
+  renderPass: `${THREE_CDN}/examples/jsm/postprocessing/RenderPass.js`,
+  unrealBloom: `${THREE_CDN}/examples/jsm/postprocessing/UnrealBloomPass.js`,
+} as const;

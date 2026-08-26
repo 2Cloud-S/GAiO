@@ -2,15 +2,16 @@
 
 import {
   useEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
 } from "react";
 import { useReducedMotion } from "motion/react";
-import { FluxVortex } from "@designcodeio/threeui";
-import "@designcodeio/threeui/style.css";
-import { HeroVortexPlaceholder } from "@/components/hero-vortex-placeholder";
-import { ensureFluxPreloads } from "@/lib/hero-flux-preloads";
+import {
+  buildHeroFluxSrcDoc,
+  ensureFluxPreloads,
+} from "@/lib/hero-flux-preloads";
 
 const MOBILE_QUERY = "(max-width: 800px)";
 
@@ -41,13 +42,14 @@ const FILL: CSSProperties = {
   border: 0,
   overflow: "hidden",
   pointerEvents: "none",
-  background: "transparent",
+  background: "#050505",
+  filter: "brightness(1.45)",
 };
 
 /**
- * Official ThreeUI Flux Vortex for the hero visual column.
- * Mounts immediately for first paint; only disposes after the first ready
- * cycle once scrolled far off-screen (so below-fold heroes still boot eagerly).
+ * Official ThreeUI Flux Vortex HTML, patched for earliest visible Three.js:
+ * no Tailwind/GSAP/loader gate, animate() starts when the module evaluates.
+ * Disposes after first ready once scrolled far off-screen.
  */
 export function HeroStructureFlow() {
   const reduceMotion = useReducedMotion();
@@ -56,6 +58,17 @@ export function HeroStructureFlow() {
   const [mobile, setMobile] = useState(false);
   const [frameReady, setFrameReady] = useState(false);
   const bootstrappedRef = useRef(false);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  const srcDoc = useMemo(
+    () =>
+      buildHeroFluxSrcDoc({
+        density: mobile ? 0.65 : 1,
+        size: 1.25,
+        speed: 1,
+      }),
+    [mobile],
+  );
 
   useEffect(() => {
     ensureFluxPreloads();
@@ -84,7 +97,6 @@ export function HeroStructureFlow() {
           setActive(true);
           return;
         }
-        // Keep loading while the iframe boots even if the map starts below the fold.
         if (bootstrappedRef.current) setActive(false);
       },
       { rootMargin: "200px", threshold: 0 },
@@ -100,12 +112,14 @@ export function HeroStructureFlow() {
 
   // Iframe is sandboxed without allow-same-origin, so detect readiness via load.
   useEffect(() => {
-    if (!host || !active || reduceMotion) return;
+    if (!active || reduceMotion) return;
+
+    const el = iframeRef.current;
+    if (!el) return;
 
     let cancelled = false;
     let fallbackTimer = 0;
     let settleTimer = 0;
-    let iframe: HTMLIFrameElement | null = null;
 
     const markReady = () => {
       if (cancelled) return;
@@ -114,78 +128,53 @@ export function HeroStructureFlow() {
 
     const onLoad = () => {
       window.clearTimeout(settleTimer);
-      // ThreeUI isolates the canvas ~100ms after DOMContentLoaded / load.
-      settleTimer = window.setTimeout(markReady, 180);
+      settleTimer = window.setTimeout(markReady, 120);
     };
 
-    const armIframe = (el: HTMLIFrameElement) => {
-      if (iframe === el) return;
-      if (iframe) iframe.removeEventListener("load", onLoad);
-      iframe = el;
-      el.addEventListener("load", onLoad);
-      // srcDoc may already be complete when we attach (SSR / fast path).
-      try {
-        const doc = el.contentDocument;
-        if (doc && doc.readyState === "complete") onLoad();
-      } catch {
-        // Sandbox without allow-same-origin — contentDocument is opaque; wait for load.
-      }
-    };
-
-    const existing = host.querySelector("iframe");
-    if (existing instanceof HTMLIFrameElement) {
-      armIframe(existing);
-    }
-
-    const mo = new MutationObserver(() => {
-      const next = host.querySelector("iframe");
-      if (next instanceof HTMLIFrameElement) armIframe(next);
-    });
-    mo.observe(host, { childList: true, subtree: true });
-
-    // Last-resort if the load event was missed after late attachment.
-    fallbackTimer = window.setTimeout(markReady, 4500);
+    el.addEventListener("load", onLoad);
+    fallbackTimer = window.setTimeout(markReady, 3500);
 
     return () => {
       cancelled = true;
-      mo.disconnect();
-      if (iframe) iframe.removeEventListener("load", onLoad);
+      el.removeEventListener("load", onLoad);
       window.clearTimeout(settleTimer);
       window.clearTimeout(fallbackTimer);
     };
-  }, [host, active, reduceMotion]);
+  }, [active, reduceMotion, srcDoc]);
+
+  useEffect(() => {
+    const win = iframeRef.current?.contentWindow;
+    if (!win || !active) return;
+    win.postMessage(
+      {
+        type: "threeui-controls",
+        controls: {
+          speed: 1,
+          size: 1.25,
+          density: mobile ? 0.65 : 1,
+          opacity: 1,
+        },
+      },
+      "*",
+    );
+  }, [active, mobile, srcDoc]);
 
   return (
     <div
       ref={setHost}
-      className={
-        frameReady
-          ? "hero-structure-flow is-vortex-ready"
-          : "hero-structure-flow"
-      }
+      className="hero-structure-flow"
       aria-hidden="true"
       style={HOST}
     >
-      <HeroVortexPlaceholder />
       {!reduceMotion && active ? (
-        <div
-          className={
-            frameReady
-              ? "hero-structure-flow__live is-ready"
-              : "hero-structure-flow__live"
-          }
-        >
-          <FluxVortex
-            mode="dark"
-            speed={1}
-            size={1.25}
-            length={1}
-            density={mobile ? 0.65 : 1}
-            opacity={1}
-            hue={0}
-            saturation={0}
-            brightness={1.45}
+        <div className="hero-structure-flow__live">
+          <iframe
+            ref={iframeRef}
             className="hero-structure-flow__frame"
+            title="Flux Vortex"
+            srcDoc={srcDoc}
+            sandbox="allow-scripts"
+            loading="eager"
             style={FILL}
           />
         </div>

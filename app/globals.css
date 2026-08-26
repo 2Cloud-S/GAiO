@@ -542,122 +542,12 @@ button { cursor: pointer; }
   aspect-ratio: 1;
   margin: 0;
   overflow: hidden;
-  /* Match Flux Vortex iframe ink so the reserved square never flashes empty. */
+  /* Match Flux Vortex iframe ink — static field while Three boots (no CSS teaser). */
   background: #050505;
   contain: layout paint;
-  /* Freeform edge — keep the core spiral fully opaque; fade only the outer rim. */
+  /* Freeform edge — keep the core fully opaque; fade only the outer rim. */
   -webkit-mask-image: radial-gradient(closest-side, #000 62%, rgba(0, 0, 0, 0.72) 78%, transparent 96%);
   mask-image: radial-gradient(closest-side, #000 62%, rgba(0, 0, 0, 0.72) 78%, transparent 96%);
-}
-/* Thematic Flux Vortex teaser — CSS/SVG so SSR HTML already feels alive. */
-.hero-vortex-placeholder {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 1;
-  overflow: hidden;
-  isolation: isolate;
-  transition: opacity 0.45s ease;
-  background: #050505;
-}
-.hero-vortex-placeholder__field {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 50% 48%, color-mix(in oklch, var(--color-paper) 42%, transparent) 0%, transparent 28%),
-    radial-gradient(circle at 50% 50%, transparent 16%, color-mix(in oklch, var(--color-paper) 28%, transparent) 17.5%, transparent 38%),
-    radial-gradient(circle at 50% 52%, transparent 36%, color-mix(in oklch, var(--color-signal) 18%, transparent) 38%, transparent 58%),
-    radial-gradient(circle at 50% 50%, transparent 58%, color-mix(in oklch, var(--color-paper) 10%, transparent) 62%, transparent 78%),
-    #050505;
-  animation: hero-vortex-breathe 5.2s var(--ease-in-out) infinite;
-}
-.hero-vortex-placeholder__swirl {
-  position: absolute;
-  inset: 4%;
-  border-radius: 50%;
-  opacity: 0.95;
-  background: repeating-conic-gradient(
-    from 12deg,
-    transparent 0deg 5deg,
-    color-mix(in oklch, var(--color-paper) 38%, transparent) 5deg 7deg,
-    transparent 7deg 12deg,
-    color-mix(in oklch, var(--color-paper) 18%, transparent) 12deg 13deg
-  );
-  -webkit-mask-image: radial-gradient(closest-side, transparent 10%, #000 26%, #000 54%, transparent 74%);
-  mask-image: radial-gradient(closest-side, transparent 10%, #000 26%, #000 54%, transparent 74%);
-  animation: hero-vortex-spin 22s linear infinite;
-}
-.hero-vortex-placeholder__ring {
-  position: absolute;
-  inset: 18%;
-  border-radius: 50%;
-  border: 1.5px solid color-mix(in oklch, var(--color-paper) 32%, transparent);
-  border-top-color: color-mix(in oklch, var(--color-paper) 92%, transparent);
-  border-right-color: color-mix(in oklch, var(--color-paper) 28%, transparent);
-  border-left-color: transparent;
-  box-shadow: 0 0 10px color-mix(in oklch, var(--color-paper) 10%, transparent);
-  animation: hero-vortex-spin 16s linear infinite;
-}
-.hero-vortex-placeholder__ring--outer {
-  inset: 10%;
-  border-style: dashed;
-  border-width: 1px;
-  opacity: 0.75;
-  box-shadow: none;
-  animation-duration: 28s;
-}
-.hero-vortex-placeholder__ring--mid {
-  inset: 22%;
-  animation-duration: 14s;
-  animation-direction: reverse;
-}
-.hero-vortex-placeholder__ring--inner {
-  inset: 34%;
-  border-width: 2px;
-  opacity: 1;
-  animation-duration: 9s;
-}
-.hero-vortex-placeholder__spiral {
-  position: absolute;
-  inset: 8%;
-  width: 84%;
-  height: 84%;
-  margin: auto;
-  overflow: visible;
-  animation: hero-vortex-spin 32s linear infinite reverse;
-}
-.hero-vortex-placeholder__spiral-path {
-  fill: none;
-  stroke: color-mix(in oklch, var(--color-paper) 88%, transparent);
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  stroke-dasharray: 28 340;
-  /* No blur filters — keeps the teaser stroke crisp while the iframe boots. */
-  animation: hero-vortex-trace 4.2s linear infinite;
-}
-.hero-vortex-placeholder__core {
-  fill: var(--color-paper);
-  transform-origin: 50% 50%;
-  transform-box: fill-box;
-  animation: hero-vortex-core-pulse 2.8s var(--ease-in-out) infinite;
-}
-.hero-vortex-placeholder__scan {
-  position: absolute;
-  inset: 16%;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    color-mix(in oklch, var(--color-paper) 42%, transparent) 22deg,
-    transparent 48deg,
-    transparent 360deg
-  );
-  -webkit-mask-image: radial-gradient(closest-side, transparent 38%, #000 52%, #000 70%, transparent 86%);
-  mask-image: radial-gradient(closest-side, transparent 38%, #000 52%, #000 70%, transparent 86%);
-  animation: hero-vortex-spin 6.5s linear infinite;
-  opacity: 0.85;
-  mix-blend-mode: screen;
 }
 .hero-structure-flow {
   /* Sized via HOST style: supersample (render large → scale down). Parent clips. */
@@ -669,18 +559,11 @@ button { cursor: pointer; }
 .hero-structure-flow canvas {
   image-rendering: auto;
 }
-.hero-structure-flow.is-vortex-ready .hero-vortex-placeholder,
-.hero-geo-map:has(.hero-structure-flow.is-vortex-ready) > .hero-vortex-placeholder {
-  opacity: 0;
-}
 .hero-structure-flow__live {
   position: absolute;
   inset: 0;
   z-index: 1;
-  opacity: 0;
-  transition: opacity 0.45s ease;
-}
-.hero-structure-flow__live.is-ready {
+  /* Visible immediately so the Three.js scene can form in place. */
   opacity: 1;
 }
 .hero-structure-flow .threeui-background {
@@ -698,20 +581,6 @@ button { cursor: pointer; }
   border: 0 !important;
   pointer-events: none !important;
   background: transparent !important;
-}
-@keyframes hero-vortex-spin {
-  to { transform: rotate(360deg); }
-}
-@keyframes hero-vortex-breathe {
-  0%, 100% { opacity: 0.88; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.035); }
-}
-@keyframes hero-vortex-trace {
-  to { stroke-dashoffset: -368; }
-}
-@keyframes hero-vortex-core-pulse {
-  0%, 100% { opacity: 0.55; transform: scale(0.85); }
-  50% { opacity: 1; transform: scale(1.25); }
 }
 .morph-line {
   position: relative;
@@ -1864,30 +1733,6 @@ button { cursor: pointer; }
     transform: none !important;
   }
   .velocity-tape span { transform: none !important; }
-  .hero-vortex-placeholder__field,
-  .hero-vortex-placeholder__swirl,
-  .hero-vortex-placeholder__ring,
-  .hero-vortex-placeholder__spiral,
-  .hero-vortex-placeholder__spiral-path,
-  .hero-vortex-placeholder__core,
-  .hero-vortex-placeholder__scan {
-    animation: none !important;
-  }
-  .hero-vortex-placeholder__field {
-    opacity: 1;
-    transform: none;
-  }
-  .hero-vortex-placeholder__spiral-path {
-    stroke-dasharray: none;
-    stroke-opacity: 0.45;
-  }
-  .hero-vortex-placeholder__core {
-    opacity: 0.8;
-  }
-  .hero-structure-flow__live,
-  .hero-vortex-placeholder {
-    transition: none !important;
-  }
   /* Keep a soft static gold on mosaic lines — no traveling highlight */
   .section-search-shift::before {
     animation: none !important;
