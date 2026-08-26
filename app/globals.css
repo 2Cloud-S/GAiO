@@ -545,9 +545,9 @@ button { cursor: pointer; }
   /* Match Flux Vortex iframe ink so the reserved square never flashes empty. */
   background: #050505;
   contain: layout paint;
-  /* Soft freeform edge so the iframe square dissolves into the hero ink. */
-  -webkit-mask-image: radial-gradient(closest-side, #000 46%, rgba(0, 0, 0, 0.55) 68%, transparent 88%);
-  mask-image: radial-gradient(closest-side, #000 46%, rgba(0, 0, 0, 0.55) 68%, transparent 88%);
+  /* Freeform edge — keep the core spiral fully opaque; fade only the outer rim. */
+  -webkit-mask-image: radial-gradient(closest-side, #000 62%, rgba(0, 0, 0, 0.72) 78%, transparent 96%);
+  mask-image: radial-gradient(closest-side, #000 62%, rgba(0, 0, 0, 0.72) 78%, transparent 96%);
 }
 /* Thematic Flux Vortex teaser — CSS/SVG so SSR HTML already feels alive. */
 .hero-vortex-placeholder {
@@ -596,7 +596,7 @@ button { cursor: pointer; }
   border-top-color: color-mix(in oklch, var(--color-paper) 92%, transparent);
   border-right-color: color-mix(in oklch, var(--color-paper) 28%, transparent);
   border-left-color: transparent;
-  box-shadow: 0 0 24px color-mix(in oklch, var(--color-paper) 12%, transparent);
+  box-shadow: 0 0 10px color-mix(in oklch, var(--color-paper) 10%, transparent);
   animation: hero-vortex-spin 16s linear infinite;
 }
 .hero-vortex-placeholder__ring--outer {
@@ -629,18 +629,17 @@ button { cursor: pointer; }
 }
 .hero-vortex-placeholder__spiral-path {
   fill: none;
-  stroke: color-mix(in oklch, var(--color-paper) 82%, transparent);
-  stroke-width: 1.15;
+  stroke: color-mix(in oklch, var(--color-paper) 88%, transparent);
+  stroke-width: 1.35;
   stroke-linecap: round;
   stroke-dasharray: 28 340;
-  filter: drop-shadow(0 0 3px color-mix(in oklch, var(--color-paper) 35%, transparent));
+  /* No blur filters — keeps the teaser stroke crisp while the iframe boots. */
   animation: hero-vortex-trace 4.2s linear infinite;
 }
 .hero-vortex-placeholder__core {
   fill: var(--color-paper);
   transform-origin: 50% 50%;
   transform-box: fill-box;
-  filter: drop-shadow(0 0 6px color-mix(in oklch, var(--color-paper) 70%, transparent));
   animation: hero-vortex-core-pulse 2.8s var(--ease-in-out) infinite;
 }
 .hero-vortex-placeholder__scan {
@@ -661,15 +660,14 @@ button { cursor: pointer; }
   mix-blend-mode: screen;
 }
 .hero-structure-flow {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  /* Sized via HOST style: supersample (render large → scale down). Parent clips. */
   overflow: hidden;
   pointer-events: none;
   background: transparent;
-  /* Individual transform: enlarge the scene without growing layout. */
-  scale: 1.1;
+}
+.hero-structure-flow iframe,
+.hero-structure-flow canvas {
+  image-rendering: auto;
 }
 .hero-structure-flow.is-vortex-ready .hero-vortex-placeholder,
 .hero-geo-map:has(.hero-structure-flow.is-vortex-ready) > .hero-vortex-placeholder {
@@ -1754,7 +1752,12 @@ button { cursor: pointer; }
   .split-head > .lede { margin-top: var(--space-5); }
   .split-head > .button { margin-top: var(--space-6); }
   .hero-geo-map { width: min(100%, 31rem); margin-inline: auto; }
-  .hero-structure-flow { scale: 1.08; }
+  /* Mobile: ~108% visual fill via 135% render × scale(0.8). */
+  .hero-structure-flow {
+    width: 135% !important;
+    height: 135% !important;
+    transform: translate(-50%, -50%) scale(0.8) !important;
+  }
   .morph-line { line-height: var(--leading-tight); letter-spacing: var(--tracking-tight); }
   .engine-panel { min-height: 29rem; padding: var(--space-5); }
   .engine-icon { width: 3.55rem; height: 3.55rem; transform: rotate(var(--angle)) translateY(-8.2rem) rotate(calc(var(--angle) * -1)); }.engine-icon b { font-size: .72rem; }.engine-core { width: 7rem; height: 7rem; font-size: 1rem; }

@@ -14,6 +14,25 @@ import { ensureFluxPreloads } from "@/lib/hero-flux-preloads";
 
 const MOBILE_QUERY = "(max-width: 800px)";
 
+/**
+ * Host renders larger than the map, then scales down (supersample).
+ * Flux Vortex uses antialias:false — CSS upscale was blurry; downscale stays crisp.
+ * 137.5% × 0.8 ≈ 110% visual fill (same crop as the old scale: 1.1).
+ */
+const HOST: CSSProperties = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  width: "137.5%",
+  height: "137.5%",
+  transform: "translate(-50%, -50%) scale(0.8)",
+  transformOrigin: "center center",
+  border: 0,
+  overflow: "hidden",
+  pointerEvents: "none",
+  background: "transparent",
+};
+
 const FILL: CSSProperties = {
   position: "absolute",
   inset: 0,
@@ -145,7 +164,7 @@ export function HeroStructureFlow() {
           : "hero-structure-flow"
       }
       aria-hidden="true"
-      style={FILL}
+      style={HOST}
     >
       <HeroVortexPlaceholder />
       {!reduceMotion && active ? (
