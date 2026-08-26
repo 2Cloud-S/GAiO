@@ -21,6 +21,8 @@ import { LineShadowText as MagicLineShadowText } from "@/components/ui/line-shad
 import { MorphingText } from "@/components/ui/morphing-text";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import MagicText3DFlip from "@/components/ui/text-3d-flip";
+import { HeroVortexPlaceholder } from "@/components/hero-vortex-placeholder";
+import { ensureFluxPreloads } from "@/lib/hero-flux-preloads";
 import { cn } from "@/lib/utils";
 
 export { Highlighter };
@@ -32,13 +34,24 @@ const MORPH_PHRASES = [
   "From AEO to answer inclusion.",
 ];
 
-const HeroStructureFlow = dynamic(
-  () =>
-    import("@/components/hero-structure-flow").then(
-      (mod) => mod.HeroStructureFlow,
-    ),
-  { ssr: false },
-);
+const loadHeroStructureFlow = () =>
+  import("@/components/hero-structure-flow").then(
+    (mod) => mod.HeroStructureFlow,
+  );
+
+/**
+ * Keep the chunk split, but SSR the iframe shell so the browser can start
+ * CDN work from first HTML — `ssr: false` was the empty-box / pop-in cause.
+ */
+const HeroStructureFlow = dynamic(loadHeroStructureFlow, {
+  loading: () => <HeroVortexPlaceholder />,
+});
+
+/** Warm CDN + start the hero chunk as soon as this client module evaluates. */
+if (typeof window !== "undefined") {
+  ensureFluxPreloads();
+  void loadHeroStructureFlow();
+}
 
 const ENGINE_LABELS = [
   "Google AI Overviews",
@@ -72,6 +85,8 @@ const ENGINE_CLOUD_IMAGES = [
 export function HeroGeoMap() {
   return (
     <div className="hero-geo-map" aria-hidden="true">
+      {/* SSR-safe size reserve + spiral until the client chunk / iframe is ready */}
+      <HeroVortexPlaceholder />
       <HeroStructureFlow />
     </div>
   );

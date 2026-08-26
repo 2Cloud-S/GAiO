@@ -9,12 +9,14 @@ import { SocialProofBadges } from "@/components/social-proof-badges";
 import { GeoAiChatDemo, GeoShiftStatement } from "@/components/geo-ai-chat-demo";
 import { CountUp, EngineCloud, HeroGeoMap, Highlighter, KineticText, LineShadowText, MethodFlow, MorphStatement, PixelProof } from "@/components/visuals";
 import { blogHref, blogListingHref, faqs, methodSteps, proofs, services, team, testimonials } from "@/lib/content";
+import { warmFluxPreloads } from "@/lib/hero-flux-preloads";
 import { getLatestInsightPosts } from "@/sanity/lib/posts";
 
 /** Refresh homepage Insights after Studio publishes. */
 export const revalidate = 60;
 
 export default async function HomePage() {
+  warmFluxPreloads();
   const latestInsights = await getLatestInsightPosts(3);
 
   return <LayoutFrame>
