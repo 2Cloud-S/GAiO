@@ -545,6 +545,15 @@ button { cursor: pointer; }
 .button-signal::after { content: ""; position: absolute; inset: -5px; border: 1px solid var(--color-signal); border-radius: inherit; animation: pulse-ring 2.4s var(--ease-out) infinite; }
 .button-ghost { background: transparent; color: var(--color-ink); }
 .section-dark .button-ghost { color: var(--color-paper); border-color: var(--color-paper); }
+.hero .button-ghost {
+  color: var(--color-paper);
+  border-color: color-mix(in oklch, var(--color-paper) 72%, transparent);
+}
+.hero .button-ghost:hover {
+  background: color-mix(in oklch, var(--color-paper) 12%, transparent);
+  border-color: var(--color-paper);
+  color: var(--color-paper);
+}
 
 .hero { position: relative; isolation: isolate; min-height: 47rem; display: grid; align-items: center; overflow-x: clip; overflow-y: visible; background: var(--color-ink); color: var(--color-paper); padding: var(--space-32) 0 var(--space-16); content-visibility: visible; }
 /* Mosaic/noise panel technique — Monochromia remap of reference gradient + grain */
@@ -617,38 +626,22 @@ button { cursor: pointer; }
     );
 }
 .hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(23rem, .92fr); align-items: center; gap: clamp(2rem, 6vw, 6rem); }
-.hero-copy { position: relative; z-index: 1; max-width: 62rem; overflow: visible; }
+.hero-copy { position: relative; z-index: 2; max-width: 62rem; overflow: visible; }
 .hero .eyebrow { color: var(--color-signal); }
 .hero .lede { margin-top: var(--space-5); max-width: 37rem; color: var(--color-paper-soft); }
-.hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
-/* Layout reserve in the grid; real vortex paints in .hero-geo-overlay beneath (see z-index). */
+.hero-actions { position: relative; z-index: 3; display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+/* In-flow vortex — transparent canvas composites over mosaic; stacks under copy on mobile. */
 .hero-geo-slot {
+  position: relative;
+  z-index: 1;
   width: min(100%, 37.5rem);
   aspect-ratio: 1;
   margin: 0;
-  visibility: hidden;
   pointer-events: none;
 }
-.hero-geo-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: grid;
-  align-items: center;
-  pointer-events: none;
-  padding: var(--space-32) 0 var(--space-16);
-}
-.hero-geo-overlay-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(23rem, .92fr);
-  align-items: center;
-  gap: clamp(2rem, 6vw, 6rem);
-  width: 100%;
-}
-.hero-geo-overlay-spacer { min-width: 0; }
 .hero-geo-map {
   position: relative;
-  width: min(100%, 37.5rem);
+  width: 100%;
   aspect-ratio: 1;
   margin: 0;
   overflow: hidden;
@@ -1727,15 +1720,20 @@ button { cursor: pointer; }
   .header-cta { display: none; }
   .hero { min-height: 42rem; padding-top: var(--space-24); }
   .hero-grid, .split-head, .proof-intro, .proof-layout, .detail-layout, .footer-grid { grid-template-columns: minmax(0, 1fr); }
-  .hero-geo-overlay-grid { grid-template-columns: minmax(0, 1fr); }
-  .hero-geo-overlay-spacer { display: none; }
+  .hero-copy { z-index: 2; }
+  .hero-geo-slot {
+    z-index: 0;
+    width: min(100%, 22rem);
+    margin: var(--space-8) auto 0;
+    order: 2;
+  }
+  .hero-copy { order: 1; }
   .proof-intro .lede,
   .split-head > .lede,
   .split-head > .button { margin-top: 0; }
   .split-head > .lede { margin-top: var(--space-5); }
   .split-head > .button { margin-top: var(--space-6); }
-  .hero-geo-map { width: min(100%, 31rem); margin-inline: auto; }
-  .hero-geo-slot { width: min(100%, 31rem); margin-inline: auto; }
+  .hero-geo-map { width: 100%; margin-inline: auto; }
   /* Mobile: ~108% visual fill via 135% render × scale(0.8). */
   .hero-structure-flow {
     width: 135% !important;

@@ -22,13 +22,6 @@ export default async function HomePage() {
   return <LayoutFrame>
     <section className="hero">
       <HeroMosaicBg />
-      {/* Vortex sits as a hero sibling so mix-blend can sample the mosaic (not trapped in hero-grid). */}
-      <div className="hero-geo-overlay" aria-hidden="true">
-        <div className="wrap hero-geo-overlay-grid">
-          <div className="hero-geo-overlay-spacer" />
-          <HeroGeoMap />
-        </div>
-      </div>
       <div className="wrap hero-grid">
         <div className="hero-copy">
           <p className="eyebrow">Generative Engine Optimization</p>
@@ -39,11 +32,12 @@ export default async function HomePage() {
           <p className="lede">We help your business become clearer, more credible, and more discoverable across generative search and Google’s AI-powered results.</p>
           <MorphStatement />
           <div className="hero-actions">
-            <Link className="button button-signal" href="/book">Book a strategy call <ArrowRight size={16} /></Link>
             <Link className="button button-ghost" href="/assessment">Run a GEO assessment</Link>
           </div>
         </div>
-        <div className="hero-geo-slot" aria-hidden="true" />
+        <div className="hero-geo-slot" aria-hidden="true">
+          <HeroGeoMap />
+        </div>
       </div>
     </section>
 
