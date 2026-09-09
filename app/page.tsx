@@ -8,20 +8,44 @@ import { AiOverviewProofList } from "@/components/ai-overview-proof";
 import { SocialProofBadges } from "@/components/social-proof-badges";
 import { GeoAiChatDemo, GeoShiftStatement } from "@/components/geo-ai-chat-demo";
 import { HeroGeoMap } from "@/components/hero-geo-map";
+import { HeroMosaicBg } from "@/components/hero-mosaic-bg";
 import { CountUp, EngineCloud, Highlighter, KineticText, LineShadowText, MethodFlow, MorphStatement, PixelProof } from "@/components/visuals";
 import { blogHref, blogListingHref, faqs, methodSteps, proofs, services, team, testimonials } from "@/lib/content";
-import { warmFluxPreloads } from "@/lib/hero-flux-preloads";
 import { getLatestInsightPosts } from "@/sanity/lib/posts";
 
 /** Refresh homepage Insights after Studio publishes. */
 export const revalidate = 60;
 
 export default async function HomePage() {
-  warmFluxPreloads();
   const latestInsights = await getLatestInsightPosts(3);
 
   return <LayoutFrame>
-    <section className="hero"><div className="wrap hero-grid"><div className="hero-copy"><p className="eyebrow">Generative Engine Optimization</p><h1 className="display headline"><span className="headline-line">Be the <LineShadowText>answer</LineShadowText></span><span className="headline-line">AI finds.</span></h1><p className="lede">We help your business become clearer, more credible, and more discoverable across generative search and Google’s AI-powered results.</p><MorphStatement /><div className="hero-actions"><Link className="button button-signal" href="/book">Book a strategy call <ArrowRight size={16} /></Link><Link className="button button-ghost" href="/assessment">Run a GEO assessment</Link></div></div><HeroGeoMap /></div></section>
+    <section className="hero">
+      <HeroMosaicBg />
+      {/* Vortex sits as a hero sibling so mix-blend can sample the mosaic (not trapped in hero-grid). */}
+      <div className="hero-geo-overlay" aria-hidden="true">
+        <div className="wrap hero-geo-overlay-grid">
+          <div className="hero-geo-overlay-spacer" />
+          <HeroGeoMap />
+        </div>
+      </div>
+      <div className="wrap hero-grid">
+        <div className="hero-copy">
+          <p className="eyebrow">Generative Engine Optimization</p>
+          <h1 className="display headline">
+            <span className="headline-line">Be the <LineShadowText>answer</LineShadowText></span>
+            <span className="headline-line">AI finds.</span>
+          </h1>
+          <p className="lede">We help your business become clearer, more credible, and more discoverable across generative search and Google’s AI-powered results.</p>
+          <MorphStatement />
+          <div className="hero-actions">
+            <Link className="button button-signal" href="/book">Book a strategy call <ArrowRight size={16} /></Link>
+            <Link className="button button-ghost" href="/assessment">Run a GEO assessment</Link>
+          </div>
+        </div>
+        <div className="hero-geo-slot" aria-hidden="true" />
+      </div>
+    </section>
 
     <section className="section section-search-shift"><div className="wrap"><GeoShiftStatement /><GeoAiChatDemo /></div></section>
 

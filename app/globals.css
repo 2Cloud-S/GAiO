@@ -531,31 +531,125 @@ button { cursor: pointer; }
 .section-dark .button-ghost { color: var(--color-paper); border-color: var(--color-paper); }
 
 .hero { position: relative; isolation: isolate; min-height: 47rem; display: grid; align-items: center; overflow-x: clip; overflow-y: visible; background: var(--color-ink); color: var(--color-paper); padding: var(--space-32) 0 var(--space-16); content-visibility: visible; }
+/* Mosaic/noise panel technique — Monochromia remap of reference gradient + grain */
+.hero-mosaic-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-mosaic-bg__gradient {
+  position: absolute;
+  inset: 0;
+  /* Reference stops remapped: cool mid → warm peak → bronze → olive → near-black
+     → graphite → mid lift → ink-soft → near-ink → ink */
+  background: linear-gradient(
+    180deg,
+    #1b1b1b 0%,
+    #2e2e2e 22%,
+    #141414 48%,
+    #0a0a0a 78%,
+    var(--color-ink) 100%
+  );
+}
+.hero-mosaic-bg__noise {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+.hero-mosaic-bg__fallback-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  /* SVG grain — shown when WebGL is skipped/failed */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.38'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: multiply;
+}
+.hero-mosaic-bg[data-reduced-motion="true"] .hero-mosaic-bg__fallback-noise,
+.hero-mosaic-bg:has(.hero-mosaic-bg__noise[data-webgl="failed"]) .hero-mosaic-bg__fallback-noise,
+.hero-mosaic-bg:has(.hero-mosaic-bg__noise[data-webgl="skipped"]) .hero-mosaic-bg__fallback-noise {
+  opacity: 0.85;
+}
+.hero-mosaic-bg:has(.hero-mosaic-bg__noise[data-webgl="ready"]) .hero-mosaic-bg__fallback-noise {
+  opacity: 0;
+}
+/* Soft left/top scrim — keeps brand + CTAs crisp without boxing the vortex */
+.hero-mosaic-bg__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      105deg,
+      color-mix(in oklch, var(--color-ink) 72%, transparent) 0%,
+      color-mix(in oklch, var(--color-ink) 42%, transparent) 34%,
+      color-mix(in oklch, var(--color-ink) 12%, transparent) 58%,
+      transparent 78%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--color-ink) 28%, transparent) 0%,
+      transparent 22%,
+      transparent 68%,
+      color-mix(in oklch, var(--color-ink) 40%, transparent) 100%
+    );
+}
 .hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(23rem, .92fr); align-items: center; gap: clamp(2rem, 6vw, 6rem); }
-.hero-copy { max-width: 62rem; overflow: visible; }
+.hero-copy { position: relative; z-index: 1; max-width: 62rem; overflow: visible; }
 .hero .eyebrow { color: var(--color-signal); }
 .hero .lede { margin-top: var(--space-5); max-width: 37rem; color: var(--color-paper-soft); }
 .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+/* Layout reserve in the grid; real vortex paints in .hero-geo-overlay beneath (see z-index). */
+.hero-geo-slot {
+  width: min(100%, 37.5rem);
+  aspect-ratio: 1;
+  margin: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.hero-geo-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  align-items: center;
+  pointer-events: none;
+  padding: var(--space-32) 0 var(--space-16);
+}
+.hero-geo-overlay-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(23rem, .92fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+  width: 100%;
+}
+.hero-geo-overlay-spacer { min-width: 0; }
 .hero-geo-map {
   position: relative;
   width: min(100%, 37.5rem);
   aspect-ratio: 1;
   margin: 0;
   overflow: hidden;
-  /* Match Flux Vortex iframe ink — static field while Three boots (no CSS teaser). */
-  background: #050505;
-  contain: layout paint;
-  /* Freeform edge — keep the core fully opaque; fade only the outer rim. */
-  -webkit-mask-image: radial-gradient(closest-side, #000 62%, rgba(0, 0, 0, 0.72) 78%, transparent 96%);
-  mask-image: radial-gradient(closest-side, #000 62%, rgba(0, 0, 0, 0.72) 78%, transparent 96%);
+  /* Transparent host — in-page WebGL clears to alpha so mosaic shows through. */
+  background: transparent;
+  box-shadow: none !important;
+  filter: none !important;
+  contain: layout;
 }
 .hero-structure-flow {
   /* Sized via HOST style: supersample (render large → scale down). Parent clips. */
   overflow: hidden;
   pointer-events: none;
   background: transparent;
+  box-shadow: none;
+  filter: none;
 }
-.hero-structure-flow iframe,
 .hero-structure-flow canvas {
   image-rendering: auto;
 }
@@ -563,21 +657,17 @@ button { cursor: pointer; }
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* Visible immediately so the Three.js scene can form in place. */
   opacity: 1;
+  box-shadow: none;
+  filter: none;
+  background: transparent;
 }
-.hero-structure-flow .threeui-background {
-  background: transparent !important;
-}
-.hero-structure-flow__frame,
-.hero-structure-flow iframe {
+.hero-structure-flow__canvas {
   position: absolute !important;
   inset: 0 !important;
   display: block !important;
   width: 100% !important;
   height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
   border: 0 !important;
   pointer-events: none !important;
   background: transparent !important;
@@ -1615,12 +1705,15 @@ button { cursor: pointer; }
   .header-cta { display: none; }
   .hero { min-height: 42rem; padding-top: var(--space-24); }
   .hero-grid, .split-head, .proof-intro, .proof-layout, .detail-layout, .footer-grid { grid-template-columns: minmax(0, 1fr); }
+  .hero-geo-overlay-grid { grid-template-columns: minmax(0, 1fr); }
+  .hero-geo-overlay-spacer { display: none; }
   .proof-intro .lede,
   .split-head > .lede,
   .split-head > .button { margin-top: 0; }
   .split-head > .lede { margin-top: var(--space-5); }
   .split-head > .button { margin-top: var(--space-6); }
   .hero-geo-map { width: min(100%, 31rem); margin-inline: auto; }
+  .hero-geo-slot { width: min(100%, 31rem); margin-inline: auto; }
   /* Mobile: ~108% visual fill via 135% render × scale(0.8). */
   .hero-structure-flow {
     width: 135% !important;

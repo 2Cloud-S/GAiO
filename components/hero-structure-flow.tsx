@@ -2,16 +2,15 @@
 
 import {
   useEffect,
-  useMemo,
   useRef,
   useState,
   type CSSProperties,
 } from "react";
 import { useReducedMotion } from "motion/react";
 import {
-  buildHeroFluxSrcDoc,
-  ensureFluxPreloads,
-} from "@/lib/hero-flux-preloads";
+  mountHeroFluxVortex,
+  type HeroFluxHandle,
+} from "@/lib/hero-flux-vortex";
 
 const MOBILE_QUERY = "(max-width: 800px)";
 
@@ -34,45 +33,29 @@ const HOST: CSSProperties = {
   background: "transparent",
 };
 
-const FILL: CSSProperties = {
+const CANVAS: CSSProperties = {
   position: "absolute",
   inset: 0,
   width: "100%",
   height: "100%",
+  display: "block",
   border: 0,
-  overflow: "hidden",
   pointerEvents: "none",
-  background: "#050505",
-  filter: "brightness(1.45)",
+  background: "transparent",
 };
 
 /**
- * Official ThreeUI Flux Vortex HTML, patched for earliest visible Three.js:
- * no Tailwind/GSAP/loader gate, animate() starts when the module evaluates.
+ * In-page Flux Vortex (transparent WebGL) so the hero mosaic shows through.
  * Disposes after first ready once scrolled far off-screen.
  */
 export function HeroStructureFlow() {
   const reduceMotion = useReducedMotion();
   const [host, setHost] = useState<HTMLDivElement | null>(null);
+  const [canvasEl, setCanvasEl] = useState<HTMLCanvasElement | null>(null);
   const [active, setActive] = useState(true);
   const [mobile, setMobile] = useState(false);
-  const [frameReady, setFrameReady] = useState(false);
   const bootstrappedRef = useRef(false);
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
-
-  const srcDoc = useMemo(
-    () =>
-      buildHeroFluxSrcDoc({
-        density: mobile ? 0.65 : 1,
-        size: 1.25,
-        speed: 1,
-      }),
-    [mobile],
-  );
-
-  useEffect(() => {
-    ensureFluxPreloads();
-  }, []);
+  const handleRef = useRef<HeroFluxHandle | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_QUERY);
@@ -81,10 +64,6 @@ export function HeroStructureFlow() {
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
   }, []);
-
-  useEffect(() => {
-    if (frameReady) bootstrappedRef.current = true;
-  }, [frameReady]);
 
   // Dispose only after first successful boot — never gate the initial hero mount.
   useEffect(() => {
@@ -107,57 +86,55 @@ export function HeroStructureFlow() {
   }, [host, reduceMotion]);
 
   useEffect(() => {
-    if (!active) setFrameReady(false);
-  }, [active]);
-
-  // Iframe is sandboxed without allow-same-origin, so detect readiness via load.
-  useEffect(() => {
-    if (!active || reduceMotion) return;
-
-    const el = iframeRef.current;
-    if (!el) return;
+    if (!active || reduceMotion || !canvasEl) {
+      handleRef.current?.dispose();
+      handleRef.current = null;
+      return;
+    }
 
     let cancelled = false;
-    let fallbackTimer = 0;
-    let settleTimer = 0;
+    let handle: HeroFluxHandle | null = null;
+    let ro: ResizeObserver | null = null;
 
-    const markReady = () => {
-      if (cancelled) return;
-      setFrameReady(true);
-    };
+    try {
+      handle = mountHeroFluxVortex(canvasEl, {
+        density: mobile ? 0.65 : 1,
+        size: 1.25,
+        speed: 1,
+      });
+    } catch (err) {
+      console.error("[HeroStructureFlow] mount failed", err);
+      return;
+    }
 
-    const onLoad = () => {
-      window.clearTimeout(settleTimer);
-      settleTimer = window.setTimeout(markReady, 120);
-    };
+    if (cancelled) {
+      handle.dispose();
+      return;
+    }
 
-    el.addEventListener("load", onLoad);
-    fallbackTimer = window.setTimeout(markReady, 3500);
+    handleRef.current = handle;
+    bootstrappedRef.current = true;
+    canvasEl.dataset.heroFlux = "mounted";
+
+    const onResize = () => handle?.resize();
+    window.addEventListener("resize", onResize);
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(onResize);
+      ro.observe(canvasEl.parentElement ?? canvasEl);
+    }
+    onResize();
 
     return () => {
       cancelled = true;
-      el.removeEventListener("load", onLoad);
-      window.clearTimeout(settleTimer);
-      window.clearTimeout(fallbackTimer);
+      window.removeEventListener("resize", onResize);
+      ro?.disconnect();
+      handle?.dispose();
+      if (handleRef.current === handle) handleRef.current = null;
+      if (canvasEl.dataset.heroFlux === "mounted") {
+        delete canvasEl.dataset.heroFlux;
+      }
     };
-  }, [active, reduceMotion, srcDoc]);
-
-  useEffect(() => {
-    const win = iframeRef.current?.contentWindow;
-    if (!win || !active) return;
-    win.postMessage(
-      {
-        type: "threeui-controls",
-        controls: {
-          speed: 1,
-          size: 1.25,
-          density: mobile ? 0.65 : 1,
-          opacity: 1,
-        },
-      },
-      "*",
-    );
-  }, [active, mobile, srcDoc]);
+  }, [active, reduceMotion, mobile, canvasEl]);
 
   return (
     <div
@@ -168,14 +145,10 @@ export function HeroStructureFlow() {
     >
       {!reduceMotion && active ? (
         <div className="hero-structure-flow__live">
-          <iframe
-            ref={iframeRef}
-            className="hero-structure-flow__frame"
-            title="Flux Vortex"
-            srcDoc={srcDoc}
-            sandbox="allow-scripts"
-            loading="eager"
-            style={FILL}
+          <canvas
+            ref={setCanvasEl}
+            className="hero-structure-flow__canvas"
+            style={CANVAS}
           />
         </div>
       ) : null}

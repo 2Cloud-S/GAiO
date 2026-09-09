@@ -90,7 +90,8 @@ const FOCUS_STYLE = `
 html, body {
   width: 100% !important; height: 100% !important; min-height: 0 !important;
   margin: 0 !important; padding: 0 !important; overflow: hidden !important;
-  background: #050505 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 body { position: relative !important; display: flex !important; align-items: center !important; justify-content: center !important; }
 body > * { visibility: hidden !important; }
@@ -100,6 +101,9 @@ body[data-threeui-ready] > [data-threeui-role] { visibility: visible !important;
   position: fixed !important; inset: 0 !important; width: 100% !important; height: 100% !important;
   max-width: none !important; max-height: none !important; z-index: 0 !important;
   opacity: 1 !important; pointer-events: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
 }
 </style>`;
 
@@ -167,6 +171,52 @@ export function buildHeroFluxSrcDoc({
     `// --- Start as soon as the module evaluates (no window.onload gate) ---
         animate();
 `,
+  );
+
+  // Sandboxed iframe WebGL stays opaque — match mosaic mid-tone; skip bloom present path.
+  html = html.replace(
+    "scene.background = new THREE.Color(config.colors.bg);\n        scene.fog = new THREE.FogExp2(config.colors.bg, 0.04);",
+    "scene.background = new THREE.Color(0x2e2e2e);\n        scene.fog = null;",
+  );
+  html = html.replace(
+    `const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            antialias: false,
+            powerPreference: "high-performance",
+            alpha: false
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;`,
+    `const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            antialias: false,
+            powerPreference: "high-performance",
+            alpha: false
+        });
+        renderer.setClearColor(0x2e2e2e, 1);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.NoToneMapping;
+        renderer.autoClear = true;`,
+  );
+  html = html.replace(
+    /\/\/ --- Post Processing ---[\s\S]*?composer\.addPass\(bloomPass\);/,
+    `// --- No postprocessing (avoids opaque black present path) ---
+        const composer = { setSize: function () {}, render: function () {} };`,
+  );
+  html = html.replace(
+    "composer.render();",
+    "renderer.setClearColor(0x2e2e2e, 1);\n            renderer.render(scene, camera);",
+  );
+  html = html.replace(
+    "opacity: 0.6,\n            blending: THREE.AdditiveBlending,",
+    "opacity: 0.9,\n            blending: THREE.AdditiveBlending,",
+  );
+  html = html.replace(
+    "opacity: 0.15,\n                blending: THREE.AdditiveBlending",
+    "opacity: 0.32,\n                blending: THREE.AdditiveBlending",
   );
 
   // Inject focus CSS + controls + early isolate into head / before </body>.
