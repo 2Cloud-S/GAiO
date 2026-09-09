@@ -1,9 +1,26 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { StyledComponentsRegistry } from "@/components/styled-components-registry";
 import { buildSiteJsonLd } from "@/lib/json-ld";
 import { siteName, siteTagline, siteUrl } from "@/lib/site";
 import "./globals.css";
+
+/** Body — self-hosted, latin subset, swap to avoid FOIT / CLS. */
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-body-face",
+  weight: ["400", "500", "600", "700"],
+});
+
+/** Display — readable geometric (not condensed Narrow) for mobile scan + brand. */
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-display-face",
+  weight: ["500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -36,8 +53,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   const jsonLd = buildSiteJsonLd();
 
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+      <body className={inter.className}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

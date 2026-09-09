@@ -271,8 +271,9 @@ const StyledWrapper = styled.div`
   .text_m {
     font-weight: 700;
     font-size: 0.9rem;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-body);
+    word-spacing: var(--word-spacing-body);
     color: var(--color-ink);
     text-decoration: none;
     display: -webkit-box;
@@ -389,7 +390,8 @@ const StyledWrapper = styled.div`
     /* Mobile/tablet: avoid cramped typography in the fixed-height meta row. */
     .text_m {
       line-height: var(--leading-snug);
-      letter-spacing: var(--tracking-tight);
+      letter-spacing: var(--tracking-body);
+      word-spacing: var(--word-spacing-body);
     }
 
     .text_s {

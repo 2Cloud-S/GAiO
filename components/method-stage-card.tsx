@@ -124,6 +124,8 @@ const StyledWrapper = styled.div`
     color: var(--color-graphite);
     font-size: var(--text-sm);
     line-height: var(--leading-lede);
+    letter-spacing: var(--tracking-lede);
+    word-spacing: var(--word-spacing-lede);
     text-align: left;
   }
 

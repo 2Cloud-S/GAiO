@@ -12,8 +12,9 @@
   --color-focus: #2e2e2e;
   --color-success: #1b1b1b;
   --color-danger: #2e2e2e;
-  --font-display: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-  --font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Faces come from next/font variables on <html>; system stacks as fallback */
+  --font-display: var(--font-display-face), "Helvetica Neue", Arial, sans-serif;
+  --font-body: var(--font-body-face), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
   /* Type scale — balanced display → h1 → h2 → h3 → lead → body → small → mono */
@@ -28,22 +29,43 @@
   --text-metric: clamp(3.25rem, 5.5vw, 5rem);
   --text-pull: clamp(1.5rem, 2vw + 0.85rem, 2.5rem);
 
-  --leading-display: 0.9;
-  --leading-headline: 0.88;
-  --leading-tight: 1.05;
-  --leading-snug: 1.2;
-  --leading-lede: 1.5;
-  --leading-body: 1.55;
+  /*
+   * Leading — Space Grotesk display + Inter body (readable mobile scan).
+   * Body/lede sit in the 1.6–1.75 reading band for site SOPs.
+   */
+  --leading-display: 1.06;
+  --leading-headline: 1.1;
+  --leading-tight: 1.22;
+  --leading-snug: 1.4;
+  --leading-lede: 1.65;
+  --leading-body: 1.7;
 
-  --tracking-display: -0.066em;
-  --tracking-headline: -0.078em;
-  --tracking-title: -0.05em;
-  --tracking-tight: -0.04em;
-  --tracking-eyebrow: 0.12em;
-  --tracking-meta: 0.07em;
+  /*
+   * Tracking — UX-friendly SOP values (not cramped, not spread).
+   * Large display: slight open tracking; body ~0.01–0.02em; eyebrows open.
+   */
+  --tracking-display: 0.015em;
+  --tracking-headline: 0.02em;
+  --tracking-title: 0.018em;
+  --tracking-tight: 0.015em;
+  --tracking-body: 0.015em;
+  --tracking-lede: 0.018em;
+  --tracking-eyebrow: 0.16em;
+  --tracking-meta: 0.12em;
+  --tracking-mono: 0.06em;
+
+  /* Word spacing — natural inter-word air with Inter / Space Grotesk */
+  --word-spacing-body: 0.03em;
+  --word-spacing-lede: 0.035em;
+  --word-spacing-display: 0.04em;
+
+  /* Measure rhythm — shared reading widths (~45–75ch comfort) */
+  --measure-lede: 40rem;
+  --measure-prose: 42rem;
+  --measure-card: 34ch;
 
   /* Eyebrow line-height + gap — used to top-align ledes with section titles */
-  --intro-lede-offset: calc(var(--text-xs) * 1.2 + var(--space-4));
+  --intro-lede-offset: calc(var(--text-xs) * var(--leading-snug) + var(--space-4));
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;

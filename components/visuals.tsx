@@ -71,7 +71,7 @@ export function LineShadowText({
   return (
     <MagicLineShadowText
       shadowColor="white"
-      className={cn("align-baseline italic", className)}
+      className={cn("align-baseline italic whitespace-nowrap", className)}
     >
       {children}
     </MagicLineShadowText>
@@ -105,7 +105,7 @@ export function MorphStatement() {
       className={cn(
         "morph-line",
         "mx-0 h-10 max-w-[42rem] justify-start overflow-visible text-left",
-        "font-mono text-[length:var(--text-lg)] font-bold leading-10 tracking-normal",
+        "font-mono text-[length:var(--text-lg)] font-bold leading-[var(--leading-lede)] tracking-[length:var(--tracking-mono)]",
         "whitespace-nowrap md:h-10 lg:text-[length:var(--text-lg)]",
       )}
     />
@@ -314,7 +314,7 @@ export function CountUp({ value, suffix = "" }: { value: number; suffix?: string
       <NumberTicker
         value={value}
         startValue={reduceMotion ? value : 0}
-        className="metric-ticker text-current tracking-[-0.07em]"
+        className="metric-ticker text-current"
       />
       <span aria-hidden="true">{suffix}</span>
     </span>

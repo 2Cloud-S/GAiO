@@ -115,8 +115,9 @@
   margin: 0;
   font-size: var(--text-pull);
   font-weight: 750;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-lede);
+  word-spacing: var(--word-spacing-lede);
   text-wrap: pretty;
   color: var(--color-ink);
   opacity: 0;
@@ -286,7 +287,7 @@
 .brandSub {
   margin: 0.08rem 0 0;
   font: 600 0.64rem/1.2 var(--font-mono);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-mono);
   text-transform: uppercase;
   color: var(--color-muted);
 }
@@ -358,7 +359,7 @@
   align-items: center;
   gap: 0.4rem;
   font: 650 0.72rem/1 var(--font-mono);
-  letter-spacing: 0.05em;
+  letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
   color: var(--color-muted);
   white-space: nowrap;
@@ -540,7 +541,7 @@
 .assistantMeta {
   margin: 0 0 0.55rem;
   font: 650 0.68rem/1.2 var(--font-mono);
-  letter-spacing: 0.05em;
+  letter-spacing: var(--tracking-meta);
   text-transform: uppercase;
   color: var(--color-muted);
 }
@@ -669,7 +670,7 @@
 
 .metric span {
   font: 600 0.68rem/1.2 var(--font-mono);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-mono);
   text-transform: uppercase;
   color: var(--color-muted);
 }

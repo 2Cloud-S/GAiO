@@ -227,8 +227,8 @@ export const MorphingText: React.FC<MorphingTextProps> = ({
     <div
       ref={containerRef}
       className={cn(
-        // No permanent filter — Magic UI's threshold+blur was left on forever and soft-blurred settled text.
-        "relative mx-auto h-16 w-full max-w-3xl text-center font-sans text-[40pt] leading-none font-bold antialiased md:h-24 lg:text-[6rem]",
+        // Defaults overridden by callers via className; avoid leading-none / huge display sizes.
+        "relative mx-auto h-16 w-full max-w-3xl text-center font-sans text-[40pt] leading-[1.2] font-bold antialiased tracking-[0.04em] md:h-24 lg:text-[6rem]",
         className
       )}
       style={{

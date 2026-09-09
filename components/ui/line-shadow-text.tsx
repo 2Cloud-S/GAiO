@@ -48,7 +48,7 @@ export function LineShadowText({
 
   return (
     <MotionComponent
-      className={cn("relative inline", className)}
+      className={cn("relative inline-flex items-baseline", className)}
       aria-label={children}
       {...props}
     >
@@ -61,6 +61,8 @@ export function LineShadowText({
             {
               "--shadow-color": shadowColor,
               zIndex: index + 1,
+              letterSpacing: "inherit",
+              paddingInlineEnd: char === " " ? "0.25em" : "0.045em",
             } as CSSProperties
           }
           className={cn(
