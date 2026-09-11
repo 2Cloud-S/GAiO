@@ -6,7 +6,7 @@ import { Globe } from "@/components/ui/globe";
 import { siteEmails } from "@/lib/site";
 
 export function LayoutFrame({ children }: { children: ReactNode }) {
-  return <div className="site-shell"><SiteHeader /><main>{children}</main><SiteFooter /></div>;
+  return <div className="site-shell"><SiteHeader /><main className="site-main">{children}</main><SiteFooter /></div>;
 }
 
 export function PageHero({ eyebrow, title, copy, action = true }: { eyebrow: string; title: string; copy: string; action?: boolean }) {

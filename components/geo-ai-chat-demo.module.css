@@ -5,176 +5,19 @@
   --gac-accent-soft: color-mix(in oklch, var(--gac-accent) 12%, var(--color-paper));
   position: relative;
   isolation: isolate;
-  /* Extra pad so mosaic + soft multi-layer window shadow are not clipped */
+  /* Extra pad so soft multi-layer window shadow is not clipped */
   margin-top: var(--space-12);
   padding: 1.25rem 1.15rem 14rem;
   overflow: visible;
-  /* Avoid paint/size containment that clips box-shadow */
   content-visibility: visible;
   contain: none;
   border-radius: 1.35rem;
-  background-color: #f7f7f6;
-  background-image: url("/patterns/mosaic.svg");
-  background-size: 96px 96px;
-  background-repeat: repeat;
-  background-position: center;
-}
-
-/* Soft veil so mosaic stays visible around the shell without fighting text */
-.root::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 62% 48% at 50% 40%,
-    color-mix(in oklch, var(--color-paper) 32%, transparent),
-    transparent 68%
-  );
-}
-
-/* Golden light on mosaic lines (same filled-line mask as Search Shift section) */
-.root::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      125deg,
-      transparent 0%,
-      transparent 34%,
-      color-mix(in oklch, #9a7018 58%, transparent) 43%,
-      color-mix(in oklch, #f5dfa0 92%, #fff) 50%,
-      color-mix(in oklch, #9a7018 58%, transparent) 57%,
-      transparent 66%,
-      transparent 100%
-    ),
-    color-mix(in oklch, #c4a35a 22%, transparent);
-  background-size: 220% 220%, auto;
-  background-position: 0% 40%, 0 0;
-  opacity: 0.62;
-  -webkit-mask-image: url("/patterns/mosaic-lines.svg");
-  mask-image: url("/patterns/mosaic-lines.svg");
-  -webkit-mask-size: 96px 96px;
-  mask-size: 96px 96px;
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-mode: alpha;
-  mask-mode: alpha;
-  filter: drop-shadow(0 0 1.25px color-mix(in oklch, #e6c56a 40%, transparent));
-  animation: mosaic-gold-travel 18s ease-in-out infinite;
-}
-
-@supports not ((mask-image: url("/patterns/mosaic-lines.svg")) or (-webkit-mask-image: url("/patterns/mosaic-lines.svg"))) {
-  .root::after {
-    content: none;
-    display: none;
-  }
+  background: transparent;
 }
 
 .root > * {
   position: relative;
   z-index: 1;
-}
-
-@keyframes mosaic-gold-travel {
-  0%, 100% { background-position: 8% 35%, 0 0; }
-  50% { background-position: 92% 65%, 0 0; }
-}
-
-.statement {
-  --gac-accent: #1a6b7a;
-  max-width: 52rem;
-  margin: 0 0 var(--space-12);
-  padding: 1.2rem 1.45rem 1.3rem;
-  border-radius: 1.05rem;
-  /* Glass edge: light rim so mosaic reads through without losing shape */
-  border: 1px solid color-mix(in oklch, var(--color-ink) 10%, transparent);
-  /* High-transparency frost — mosaic must read through; blur via .statementGlass */
-  background: rgb(255 255 255 / 0.14);
-  box-shadow:
-    0 1px 2px color-mix(in oklch, var(--color-ink) 4%, transparent),
-    0 10px 28px color-mix(in oklch, var(--color-ink) 6%, transparent);
-}
-
-/* Isolated so Lightning/Turbopack does not drop backdrop-filter from the main rule */
-.statementGlass {
-  -webkit-backdrop-filter: blur(7px) saturate(1.06);
-  backdrop-filter: blur(7px) saturate(1.06);
-}
-
-/* Motion target — keep opacity off the glass shell so backdrop-filter stays active */
-.statementInner {
-  margin: 0;
-  font-size: var(--text-pull);
-  font-weight: 750;
-  line-height: var(--leading-snug);
-  letter-spacing: var(--tracking-lede);
-  word-spacing: var(--word-spacing-lede);
-  text-wrap: pretty;
-  color: var(--color-ink);
-  opacity: 0;
-  will-change: opacity, transform;
-}
-
-.statementReady .statementInner {
-  opacity: 1;
-  will-change: auto;
-}
-
-.statementMark {
-  color: var(--color-ink);
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  background: linear-gradient(
-    transparent 62%,
-    color-mix(in oklch, var(--gac-accent) 28%, transparent) 62%
-  );
-  opacity: 0.4;
-}
-
-.statementReady .statementMark {
-  opacity: 1;
-}
-
-.statementPulse .statementMark {
-  animation: statementMarkPulse 2.6s ease-in-out 0.15s 1;
-}
-
-.statementPulse .statementMark:nth-of-type(1) {
-  animation-delay: 0.05s;
-}
-.statementPulse .statementMark:nth-of-type(2) {
-  animation-delay: 0.18s;
-}
-.statementPulse .statementMark:nth-of-type(3) {
-  animation-delay: 0.31s;
-}
-.statementPulse .statementMark:nth-of-type(4) {
-  animation-delay: 0.44s;
-}
-
-@keyframes statementMarkPulse {
-  0%,
-  100% {
-    background: linear-gradient(
-      transparent 62%,
-      color-mix(in oklch, var(--gac-accent) 28%, transparent) 62%
-    );
-  }
-  45% {
-    background: linear-gradient(
-      transparent 58%,
-      color-mix(in oklch, var(--gac-accent) 42%, transparent) 58%
-    );
-  }
 }
 
 .shellFrame {
@@ -192,8 +35,70 @@
   overflow: visible;
 }
 
+/* Blueprint rails wrap the chat box instead of running through it as a square grid */
+.shellFrame::before {
+  content: "";
+  position: absolute;
+  inset: -0.85rem;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: calc(1.15rem + 0.35rem);
+  border: 1px solid color-mix(in oklch, var(--color-blueprint-line) 90%, var(--color-ink));
+  background:
+    linear-gradient(var(--color-grid-accent), var(--color-grid-accent)) 0 0 / 8px 8px no-repeat,
+    linear-gradient(var(--color-grid-accent), var(--color-grid-accent)) 100% 0 / 8px 8px no-repeat,
+    linear-gradient(var(--color-grid-accent), var(--color-grid-accent)) 0 100% / 8px 8px no-repeat,
+    linear-gradient(var(--color-grid-accent), var(--color-grid-accent)) 100% 100% / 8px 8px no-repeat;
+  box-shadow:
+    /* approach rails from the section grid into the frame */
+    -2.5rem 20% 0 0 color-mix(in oklch, var(--color-blueprint-line) 70%, transparent),
+    2.5rem 72% 0 0 color-mix(in oklch, var(--color-blueprint-line) 70%, transparent);
+}
+
+.shellFrame::after {
+  content: "";
+  position: absolute;
+  inset: -0.85rem;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: calc(1.15rem + 0.35rem);
+  /* Mid-edge ticks — horizontal/vertical stubs so the rail “turns” around the box */
+  background:
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent),
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent)
+    )
+      left 12% top 0 / 2.75rem 1px no-repeat,
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent),
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent)
+    )
+      right 18% top 0 / 3.25rem 1px no-repeat,
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent),
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent)
+    )
+      left 22% bottom 0 / 3.5rem 1px no-repeat,
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent),
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent)
+    )
+      left 0 top 28% / 1px 2.5rem no-repeat,
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent),
+      color-mix(in oklch, var(--color-blueprint-line) 85%, transparent)
+    )
+      right 0 top 55% / 1px 3rem no-repeat;
+}
+
 .shell {
   position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 100%;
   display: flex;
@@ -201,7 +106,7 @@
   min-height: clamp(42rem, 78vh, 48.75rem);
   height: clamp(42rem, 78vh, 48.75rem);
   border-radius: 1.15rem;
-  /* Solid paper keeps chat readable over mosaic; avoid backdrop-filter + overflow:clip */
+  /* Solid paper keeps chat readable over the blueprint field */
   background: var(--color-paper);
   border: 1px solid color-mix(in oklch, var(--color-ink) 9%, transparent);
   overflow: clip;
@@ -1019,29 +924,5 @@
 
   .cursor {
     display: none;
-  }
-
-  .root::after {
-    animation: none;
-    background-position: 42% 48%, 0 0;
-    opacity: 0.28;
-    filter: none;
-  }
-
-  .statement {
-    will-change: auto;
-  }
-
-  .statementInner {
-    opacity: 1;
-    will-change: auto;
-  }
-
-  .statementMark {
-    opacity: 1;
-  }
-
-  .statementPulse .statementMark {
-    animation: none;
   }
 }

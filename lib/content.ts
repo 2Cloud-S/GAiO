@@ -64,12 +64,6 @@ export const solutionsMegaItems: MegaNavItem[] = [
     description: "Define prompts and evidence patterns, then review visibility over time.",
     icon: "radar",
   },
-  {
-    href: "/assessment",
-    title: "GEO readiness assessment",
-    description: "A focused starting point from your site priorities and proof.",
-    icon: "clipboard",
-  },
 ];
 
 export const engineMegaItems: MegaNavItem[] = [

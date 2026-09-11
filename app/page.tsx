@@ -6,10 +6,12 @@ import { TeamCard } from "@/components/team-card";
 import { Marquee } from "@/components/ui/marquee";
 import { AiOverviewProofList } from "@/components/ai-overview-proof";
 import { SocialProofBadges } from "@/components/social-proof-badges";
-import { GeoAiChatDemo, GeoShiftStatement } from "@/components/geo-ai-chat-demo";
+import { GeoEraBillboard } from "@/components/geo-era-billboard";
+import { GeoAiChatDemo } from "@/components/geo-ai-chat-demo";
 import { HeroGeoMap } from "@/components/hero-geo-map";
 import { HeroMosaicBg } from "@/components/hero-mosaic-bg";
-import { CountUp, EngineCloud, Highlighter, KineticText, LineShadowText, MethodFlow, MorphStatement, PixelProof } from "@/components/visuals";
+import { CountUp, EngineCloud, HeroFloatIcon, Highlighter, KineticText, LineShadowText, MorphStatement, PixelProof } from "@/components/visuals";
+import { GeoMethodBento } from "@/components/geo-method-bento";
 import { blogHref, blogListingHref, faqs, methodSteps, proofs, services, team, testimonials } from "@/lib/content";
 import { getLatestInsightPosts } from "@/sanity/lib/posts";
 
@@ -27,7 +29,7 @@ export default async function HomePage() {
           <p className="eyebrow">Generative Engine Optimization</p>
           <h1 className="display headline">
             <span className="headline-line">Be the <LineShadowText>answer</LineShadowText></span>
-            <span className="headline-line">AI finds.</span>
+            <span className="headline-line">AI finds.<HeroFloatIcon /></span>
           </h1>
           <p className="lede">We help your business become clearer, more credible, and more discoverable across generative search and Google’s AI-powered results.</p>
           <MorphStatement />
@@ -41,11 +43,33 @@ export default async function HomePage() {
       </div>
     </section>
 
-    <section className="section section-search-shift"><div className="wrap"><GeoShiftStatement /><GeoAiChatDemo /></div></section>
+    <section className="section section-search-shift">
+      <div className="wrap">
+        <GeoEraBillboard />
+        <GeoAiChatDemo />
+      </div>
+    </section>
 
-    <section id="engine-landscape" className="section section-dark"><div className="wrap"><div className="split-head"><div><p className="eyebrow">Engine landscape</p><h2 className="display section-title">One category. Many answer surfaces.</h2></div><p className="lede">We organise the work around the systems your audience actually uses, while keeping the message and evidence consistent across every surface.</p></div><EngineCloud /></div></section>
+    <section id="engine-landscape" className="section section-dark section-zip-end">
+      <div className="wrap">
+        <div className="split-head">
+          <div>
+            <p className="eyebrow">Engine landscape</p>
+            <h2 className="display section-title">One category. Many answer surfaces.</h2>
+          </div>
+          <p className="lede">We organise the work around the systems your audience actually uses, while keeping the message and evidence consistent across every surface.</p>
+        </div>
+        <EngineCloud />
+      </div>
+      {/* Zip-open corner: peels the dark plane into the muted section below */}
+      <div className="section-zip" aria-hidden="true">
+        <span className="section-zip__well" />
+        <span className="section-zip__mouth" />
+        <span className="section-zip__rail" />
+      </div>
+    </section>
 
-    <section className="section section-muted"><div className="wrap"><div className="section-intro"><p className="eyebrow">Our GEO operating system</p><h2 className="display section-title">A five-stage path from ambiguity to evidence.</h2></div><MethodFlow steps={methodSteps} /><div className="print-signal"><span className="print-bars"><i /><i /><i /><i /></span> Publish → parse → validate</div></div></section>
+    <section className="section section-muted"><div className="wrap"><div className="section-intro"><p className="eyebrow">Our GEO operating system</p><h2 className="display section-title">A five-stage path from ambiguity to evidence.</h2></div><GeoMethodBento steps={methodSteps} /><div className="print-signal"><span className="print-bars"><i /><i /><i /><i /></span> Publish → parse → validate</div></div></section>
     <KineticText text="Make your expertise machine-readable" />
 
     <section className="section"><div className="wrap"><div className="split-head"><div><p className="eyebrow">What we optimise</p><h2 className="display section-title">The parts of your presence that make a useful answer possible.</h2></div><p className="lede">No generic “AI SEO” package. We create a focused roadmap around your priority topics, claims, sources, and customer decisions.</p></div><div className="service-grid">{services.map((service) => <article className="service-card" key={service.number}><span className="service-number">{service.number}</span><div className="orbit-map" aria-hidden="true" /><h3>{service.title}</h3><p>{service.copy}</p><div className="tag-row">{service.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div></article>)}</div></div></section>

@@ -78,6 +78,79 @@ export function LineShadowText({
   );
 }
 
+/** Icons that cycle in the hero float animation */
+const HERO_FLOAT_ICONS = [
+  // Sparkle — AI discovery
+  <svg key="sparkle" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M24 4L26.5 18.5L41 16L28 24L41 32L26.5 29.5L24 44L21.5 29.5L7 32L20 24L7 16L21.5 18.5L24 4Z" fill="currentColor" fillOpacity="0.95" />
+    <circle cx="10" cy="8" r="2" fill="currentColor" fillOpacity="0.6" />
+    <circle cx="38" cy="40" r="2.5" fill="currentColor" fillOpacity="0.5" />
+  </svg>,
+  // Target/Bullseye — precision
+  <svg key="target" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" strokeOpacity="0.9" fill="none" />
+    <circle cx="24" cy="24" r="12" stroke="currentColor" strokeWidth="2" strokeOpacity="0.7" fill="none" />
+    <circle cx="24" cy="24" r="5" fill="currentColor" fillOpacity="0.95" />
+  </svg>,
+  // Search/Magnifier — discovery
+  <svg key="search" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="20" cy="20" r="14" stroke="currentColor" strokeWidth="3" strokeOpacity="0.9" fill="none" />
+    <path d="M30 30L42 42" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeOpacity="0.95" />
+    <circle cx="20" cy="20" r="6" fill="currentColor" fillOpacity="0.3" />
+  </svg>,
+  // Lightning bolt — speed/AI
+  <svg key="bolt" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M26 4L10 26H22L20 44L38 20H26L26 4Z" fill="currentColor" fillOpacity="0.95" />
+    <circle cx="38" cy="10" r="2" fill="currentColor" fillOpacity="0.5" />
+    <circle cx="8" cy="38" r="2.5" fill="currentColor" fillOpacity="0.4" />
+  </svg>,
+  // Chat bubble — answers
+  <svg key="chat" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 12C8 9.79 9.79 8 12 8H36C38.21 8 40 9.79 40 12V28C40 30.21 38.21 32 36 32H18L10 40V32H12C9.79 32 8 30.21 8 28V12Z" fill="currentColor" fillOpacity="0.9" />
+    <circle cx="17" cy="20" r="2.5" fill="currentColor" fillOpacity="0.3" />
+    <circle cx="24" cy="20" r="2.5" fill="currentColor" fillOpacity="0.3" />
+    <circle cx="31" cy="20" r="2.5" fill="currentColor" fillOpacity="0.3" />
+  </svg>,
+];
+
+/** Accio-style floating icon that tilts, bounces, and cycles through icons. */
+export function HeroFloatIcon({ className }: { className?: string }) {
+  const reduceMotion = useReducedMotion();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % HERO_FLOAT_ICONS.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, [reduceMotion]);
+
+  return (
+    <motion.span
+      className={cn("hero-float-icon", className)}
+      aria-hidden="true"
+      initial={{ opacity: 0, scale: 0.6, rotate: -12 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      transition={{ delay: 0.6, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={reduceMotion ? {} : { scale: 1.15, rotate: 8 }}
+    >
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={activeIndex}
+          className="hero-float-icon__wrap"
+          initial={{ opacity: 0, scale: 0.7, rotate: -15 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          exit={{ opacity: 0, scale: 0.7, rotate: 15 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {HERO_FLOAT_ICONS[activeIndex]}
+        </motion.span>
+      </AnimatePresence>
+    </motion.span>
+  );
+}
+
 /** Magic UI Morphing Text — cycles SEO / GEO / AEO into the same supporting line. */
 export function MorphStatement() {
   const reduceMotion = useReducedMotion();

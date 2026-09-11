@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <style>
+    text {
+      font-family: Arial, sans-serif;
+      font-weight: 800;
+      font-size: 36px;
+      letter-spacing: -0.04em;
+    }
+    @media (prefers-color-scheme: light) {
+      text { fill: #0a0a0a; }
+    }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #ffffff; }
+    }
+  </style>
+  <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle">G</text>
+</svg>

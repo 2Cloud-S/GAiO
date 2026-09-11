@@ -499,7 +499,6 @@ export function SiteFooter() {
               {item.label}
             </Link>
           ))}
-          <Link href="/assessment">Readiness assessment</Link>
           <a href="/sitemap.xml">Sitemap</a>
           <a href="/llms.txt">llms.txt</a>
         </nav>
